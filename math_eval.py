@@ -5,8 +5,6 @@ import time
 from vllm import LLM, SamplingParams
 from datetime import datetime
 from tqdm import tqdm
-
-import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from evaluate import evaluate
@@ -20,11 +18,12 @@ from model_utils import load_hf_lm_and_tokenizer, generate_completions
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_names", default="gsm8k,math", type=str)
+    parser.add_argument("--ratio", type=float, default=-1, help="ratio of cot to use for generation")
+    parser.add_argument("--data_names", default="math", type=str)
     parser.add_argument("--data_dir", default="./data", type=str)
-    parser.add_argument("--model_name_or_path", default="gpt-4", type=str)
-    parser.add_argument("--output_dir", default="./output", type=str)
-    parser.add_argument("--prompt_type", default="tool-integrated", type=str)
+    parser.add_argument("--model_name_or_path", default="Qwen/QwQ-32B-Preview", type=str)
+    parser.add_argument("--output_dir", default="Qwen/QwQ-32B-Preview/math_eval", type=str)
+    parser.add_argument("--prompt_type", default="qwen25-math-cot", type=str)
     parser.add_argument("--split", default="test", type=str)
     parser.add_argument("--num_test_sample", default=-1, type=int)  # -1 for full data
     parser.add_argument("--seed", default=0, type=int)
@@ -33,35 +32,27 @@ def parse_args():
     parser.add_argument("--temperature", default=0, type=float)
     parser.add_argument("--n_sampling", default=1, type=int)
     parser.add_argument("--top_p", default=1, type=float)
-    parser.add_argument("--max_tokens_per_call", default=2048, type=int)
+    parser.add_argument("--max_tokens_per_call", default=8192, type=int)
     parser.add_argument("--shuffle", action="store_true")
     parser.add_argument("--use_vllm", action="store_true")
     parser.add_argument("--save_outputs", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--use_safetensors", action="store_true")
     parser.add_argument("--num_shots", type=int, default=0)
-    parser.add_argument(
-        "--apply_chat_template",
-        action="store_true",
-        help="Apply chat template to prompt.",
-    )
+    parser.add_argument("--apply_chat_template", action="store_true", help="Apply chat template to prompt.",)
     parser.add_argument("--pipeline_parallel_size", type=int, default=1)
-    parser.add_argument(
-        "--adapt_few_shot",
-        action="store_true",
-        help="Few shot for multiple-choice questions, zero shot for others.",
-    )
+    parser.add_argument("--adapt_few_shot", action="store_true", help="Few shot for multiple-choice questions, zero shot for others.",)
     args = parser.parse_args()
-    args.top_p = (
-        1 if args.temperature == 0 else args.top_p
-    )  # top_p must be 1 when using greedy sampling (vllm)
+    args.top_p = (1 if args.temperature == 0 else args.top_p)  # top_p must be 1 when using greedy sampling (vllm)
+    if args.ratio > 0:
+        args.max_tokens_per_call = 50
     return args
 
 
 def prepare_data(data_name, args):
     examples = load_data(data_name, args.split, args.data_dir)
 
-    # sample `num_test_sample` from dataset
+    # sample `num_test_sample` from dataset， -1 for full data
     if args.num_test_sample > 0:
         # examples = random.sample(examples, min(args.num_test_sample, len(examples)))
         examples = examples[: args.num_test_sample]
@@ -80,8 +71,11 @@ def prepare_data(data_name, args):
     out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
     output_dir = args.output_dir
     if not os.path.exists(output_dir):
-        output_dir = f"outputs/{output_dir}"
-    out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
+        output_dir = f"outputs/12_11/{output_dir}"
+    if args.ratio > 0 :
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_r{args.ratio}.jsonl"
+    else:
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
     os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)
 
     # load all processed samples
@@ -114,6 +108,7 @@ def setup(args):
             tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
             pipeline_parallel_size=args.pipeline_parallel_size,
             trust_remote_code=True,
+            gpu_memory_utilization=0.8
         )
         tokenizer = None
         if args.apply_chat_template:
@@ -157,8 +152,8 @@ def is_multi_choice(answer):
 
 def main(llm, tokenizer, data_name, args):
     examples, processed_samples, out_file = prepare_data(data_name, args)
-    print("=" * 50)
-    print("data:", data_name, " ,remain samples:", len(examples))
+    print("\n" + "-" * 50)
+    print("data:", data_name, ", remain samples:", len(examples))
     if len(examples) > 0:
         print(examples[0])
 
@@ -168,7 +163,15 @@ def main(llm, tokenizer, data_name, args):
     else:
         executor = PythonExecutor(get_answer_from_stdout=True)
 
+    if args.ratio > 0 :
+        done_samples_path = "outputs/12_11/" + args.output_dir + "/" + data_name + "/" + args.split + "_" + args.prompt_type + "_" + str(args.num_test_sample) + "_seed" + str(args.seed) + "_t" + str(args.temperature) + "_s" + str(args.start) + "_e" + str(args.end)  + ".jsonl"
+        done_samples = list(load_jsonl(done_samples_path))
+    else:
+        done_samples = []
+    done_samples = {sample["idx"]: sample for sample in done_samples}
+    
     samples = []
+    print("\nProcessing", len(examples), "examples", "=" * 50)
     for example in tqdm(examples, total=len(examples)):
         idx = example["idx"]
 
@@ -179,6 +182,12 @@ def main(llm, tokenizer, data_name, args):
         gt_cot, gt_ans = parse_ground_truth(example, data_name)
         example["gt_ans"] = gt_ans
         full_prompt = construct_prompt(example, data_name, args)
+        # # add ratio part of complete cot
+        if args.ratio > 0 :
+            done_cot = done_samples[idx]["code"][0]
+            cut_cot = done_cot[:int(len(done_cot)*args.ratio)]
+            # 将prompt中的<|im_start|>assistant\n换成新内容
+            full_prompt = full_prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n")
 
         if idx == args.start:
             print(full_prompt)
@@ -213,9 +222,8 @@ def main(llm, tokenizer, data_name, args):
         samples.append(sample)
 
     # repeat n times
-    input_prompts = [
-        sample["prompt"] for sample in samples for _ in range(args.n_sampling)
-    ]
+    input_prompts = [sample["prompt"] for sample in samples for _ in range(args.n_sampling)]
+    
     if args.apply_chat_template:
         input_prompts = [
             tokenizer.apply_chat_template(
@@ -257,36 +265,44 @@ def main(llm, tokenizer, data_name, args):
 
         # get all outputs
         prompts = [item[1] for item in current_prompts]
-        if args.use_vllm:
-            outputs = llm.generate(
-                prompts,
-                SamplingParams(
-                    temperature=args.temperature,
-                    top_p=args.top_p,
-                    max_tokens=args.max_tokens_per_call,
-                    n=1,
-                    stop=stop_words,
-                    stop_token_ids=(
-                        [151645, 151643]
-                        if "qwen2" in args.model_name_or_path.lower()
-                        else None
-                    ),
-                ),
-            )
+        # 为了防止内存爆炸，将prompts分成4份，每份调用一次vllm
+        num_prompts = len(prompts)
+        chunk_size = (num_prompts + 9) // 10  # 计算每一份的大小，确保包含所有的 prompts
+        outputs = []
 
-            outputs = sorted(
-                outputs, key=lambda x: int(x.request_id)
-            )  # sort outputs by request_id
-            outputs = [output.outputs[0].text for output in outputs]
-        else:
-            outputs = generate_completions(
-                model=llm,
-                tokenizer=tokenizer,
-                prompts=prompts,
-                max_new_tokens=args.max_tokens_per_call,
-                batch_size=16,
-                stop_id_sequences=stop_words,
-            )
+        for i in range(0, num_prompts, chunk_size):
+            chunk = prompts[i:i + chunk_size]  # 获取当前的 chunk
+            if args.use_vllm:
+                chunk_outputs = llm.generate(
+                    chunk,
+                    SamplingParams(
+                        temperature=args.temperature,
+                        top_p=args.top_p,
+                        max_tokens=args.max_tokens_per_call,
+                        n=1,
+                        stop=stop_words,
+                        stop_token_ids=(
+                            [151645, 151643]
+                            if "qwen2" in args.model_name_or_path.lower()
+                            else None
+                        ),
+                    ),
+                )
+
+                chunk_outputs = sorted(
+                    chunk_outputs, key=lambda x: int(x.request_id)
+                )  # sort outputs by request_id
+                outputs.extend([output.outputs[0].text for output in chunk_outputs])
+            else:
+                chunk_outputs = generate_completions(
+                    model=llm,
+                    tokenizer=tokenizer,
+                    prompts=chunk,
+                    max_new_tokens=args.max_tokens_per_call,
+                    batch_size=16,
+                    stop_id_sequences=stop_words,
+                )
+                outputs.extend(chunk_outputs)
 
         assert len(outputs) == len(current_prompts)
 
@@ -370,7 +386,7 @@ def main(llm, tokenizer, data_name, args):
                     [c for c in preds[j] if c in ["A", "B", "C", "D", "E"]]
                 )
 
-        sample.pop("prompt")
+        # sample.pop("prompt")  # save the prompt for debug
         sample.update({"code": code, "pred": preds, "report": reports})
         all_samples.append(sample)
 

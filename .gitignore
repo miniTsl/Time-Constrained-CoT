@@ -1,0 +1,6 @@
+stdout.txt
+outputs/
+plot/*.png
+plot/old/*.png
+*.pyc
+*.pycache*

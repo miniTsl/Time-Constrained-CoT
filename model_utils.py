@@ -141,8 +141,9 @@ def load_hf_lm_and_tokenizer(
         model_name_or_path, 
         tokenizer_name_or_path=None, 
         device_map="auto", 
+        torch_dtype="auto",
         load_in_8bit=False, 
-        load_in_half=True,
+        # load_in_half=True,
         gptq_model=False,
         use_fast_tokenizer=False,
         padding_side="left",
@@ -185,17 +186,15 @@ def load_hf_lm_and_tokenizer(
             load_in_8bit=True
         )
     else:
-        # return "", tokenizer
-        # defaul load in float16
         model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                                     torch_dtype=torch.float16,
+                                                     torch_dtype=torch_dtype,
                                                      device_map=device_map,
                                                      trust_remote_code=True,
                                                      use_safetensors=use_safetensors)
         if torch.cuda.is_available():
             model = model.cuda()
-        if load_in_half:
-            model = model.half()
+        # if load_in_half:
+        #     model = model.half()
     model.eval()
     return model, tokenizer
 

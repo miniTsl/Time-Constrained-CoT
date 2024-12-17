@@ -145,6 +145,27 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
+    "corse-to-fine": (
+        "<|im_start|>system\nPlease reason step-by-step, and put your final answer within \\boxed{{}}. However, considering output time(token) limit, you should do corse grained reasoning first and get an answer quickly. Then you can do fine grained reasoning to check and verify your answer. This way, even if the inference process is interrupted, you can still output a reasoning that's good enough to solve the task.<|im_end|>\n"
+        "<|im_start|>user\n{input}<|im_end|>\n"
+        "<|im_start|>assistant\n",
+        "{output}",
+        "\n\n",
+    ),
+    # "corse-to-fine-structured": (
+    #     "<|im_start|>system\nPerform the task in two types of reasoning:\n1. Coarse-Grained Reasoning: quick analysis and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: detailed analysis and a refined answer. Foucus on accuracy and correctness.\n\nFor both types, you MUST:\n- reason step by step.\n- put your final answer within \\boxed{{}}.\n\nOutput format:\n<Coarse Reasoning>: ...\n<Coarse Answer>: ...\n\n<Fine Reasoning>: ...\n<Fine Answer>: ...\n\n<Final Answer><|im_end|>\n"
+    #     "<|im_start|>user\n{input}<|im_end|>\n"
+    #     "<|im_start|>assistant\n",
+    #     "{output}",
+    #     "\n\n", 
+    # ),
+    "corse-to-fine-structured": (
+        "<|im_start|>system\nSolve the task through two types of reasoning:\n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Foucus on accuracy and correctness.\nPut final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n"
+        "<|im_start|>user\n{input}<|im_end|>\n"
+        "<|im_start|>assistant\n",
+        "{output}",
+        "\n\n", 
+    ),
     "mathstral": (
         "{input}\nPlease reason step by step, and put your final answer within \\boxed{{}}.",
         "{output}",
@@ -184,7 +205,6 @@ def construct_prompt(example, data_name, args):
 
     prompt_temp = PROMPT_TEMPLATES[args.prompt_type]
 
-    splitter = prompt_temp[2]
     input_template, output_template, splitter = (
         prompt_temp[0],
         prompt_temp[1],

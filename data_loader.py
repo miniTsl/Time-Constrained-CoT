@@ -76,6 +76,7 @@ def load_data(data_name, split, data_dir="./data"):
         os.makedirs(f"{data_dir}/{data_name}", exist_ok=True)
         dataset.to_json(data_file)
 
+    # example is a list of dicts
     # add 'idx' in the first column
     if "idx" not in examples[0]:
         examples = [{"idx": i, **example} for i, example in enumerate(examples)]
