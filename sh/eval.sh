@@ -4,6 +4,7 @@ PROMPT_TYPE=$1
 MODEL_NAME_OR_PATH=$2
 RATIO=$3
 OUTPUT_DIR=$4
+TEMPERATURE=$5
 
 SPLIT="test"
 NUM_TEST_SAMPLE=-1
@@ -20,7 +21,7 @@ python3 -u math_eval.py \
     --prompt_type ${PROMPT_TYPE} \
     --num_test_sample ${NUM_TEST_SAMPLE} \
     --seed 0 \
-    --temperature 0 \
+    --temperature ${TEMPERATURE} \
     --n_sampling 1 \
     --top_p 1 \
     --start 0 \

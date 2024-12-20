@@ -14,6 +14,15 @@ from trajectory import *
 from data_loader import load_data
 from python_executor import PythonExecutor
 from model_utils import load_hf_lm_and_tokenizer, generate_completions
+import json
+
+def dump2json(data, filename):
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+def load2json(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
 
 
 def parse_args():
@@ -42,20 +51,40 @@ def parse_args():
     parser.add_argument("--apply_chat_template", action="store_true", help="Apply chat template to prompt.",)
     parser.add_argument("--pipeline_parallel_size", type=int, default=1)
     parser.add_argument("--adapt_few_shot", action="store_true", help="Few shot for multiple-choice questions, zero shot for others.",)
+
+    parser.add_argument("--cot_nums", type=int, default=1)
+    parser.add_argument("--merge_cots", action="store_true", help="whether it is the stage to merge 10 cot paths into one prompt, query LLM about the final result")
+
     args = parser.parse_args()
     args.top_p = (1 if args.temperature == 0 else args.top_p)  # top_p must be 1 when using greedy sampling (vllm)
     if args.ratio > 0:
         args.max_tokens_per_call = 50
     return args
 
+def get_merged_cots(cot_answers, ratio):
+    merged_thoughts = ''
+    for i in range(len(cot_answers)):
+        merged_thoughts += f'Reasoning path {i}: {cot_answers[i]}\n'
 
-def prepare_data(data_name, args):
+def crop_cot(cot, ratio):
+    cut_cot = cot[:int(len(cot)*ratio)]
+    # 将prompt中的<|im_start|>assistant\n换成新内容
+    full_prompt = full_prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n")
+
+def prepare_data(data_name, args, max_samples=None, cot_id=None):
     examples = load_data(data_name, args.split, args.data_dir)
 
-    # sample `num_test_sample` from dataset， -1 for full data
-    if args.num_test_sample > 0:
-        # examples = random.sample(examples, min(args.num_test_sample, len(examples)))
-        examples = examples[: args.num_test_sample]
+    if os.path.exists(f'test_{max_samples}_{data_name}.json'):
+        sample_ids = load2json(f'test_{max_samples}_{data_name}.json')
+    else:
+        sample_ids = random.sample(range(len(examples)), max_samples)
+        dump2json(sample_ids, f'test_{max_samples}_{data_name}.json')
+    examples = [examples[i] for i in sample_ids]
+
+    # # sample `num_test_sample` from dataset， -1 for full data
+    # if args.num_test_sample > 0:
+    #     # examples = random.sample(examples, min(args.num_test_sample, len(examples)))
+    #     examples = examples[: args.num_test_sample]
 
     # shuffle
     if args.shuffle:
@@ -63,7 +92,7 @@ def prepare_data(data_name, args):
         random.shuffle(examples)
 
     # select start and end
-    examples = examples[args.start : len(examples) if args.end == -1 else args.end]
+    # examples = examples[args.start : len(examples) if args.end == -1 else args.end]
 
     # get out_file name
     dt_string = datetime.now().strftime("%m-%d_%H-%M")
@@ -72,10 +101,16 @@ def prepare_data(data_name, args):
     output_dir = args.output_dir
     if not os.path.exists(output_dir):
         output_dir = f"outputs/12_11/{output_dir}"
-    if args.ratio > 0 :
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_r{args.ratio}.jsonl"
+    if not cot_id:
+        if args.ratio > 0 :
+            out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_r{args.ratio}.jsonl"
+        else:
+            out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
     else:
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
+        if args.ratio > 0 :
+            out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_r{args.ratio}_cot_{cot_id}.jsonl"
+        else:
+            out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_cot_{cot_id}.jsonl"
     os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)
 
     # load all processed samples
@@ -122,25 +157,27 @@ def setup(args):
             use_fast_tokenizer=True,
             use_safetensors=args.use_safetensors,
         )
+    
+    for cot_id in range(args.cot_nums):
+        print('*'*30, 'cot_id:', cot_id, '*'*30)
+        # infer & eval
+        data_list = args.data_names.split(",")
+        results = []
+        for data_name in data_list:
+            results.append(main(llm, tokenizer, data_name, args, cot_id))
 
-    # infer & eval
-    data_list = args.data_names.split(",")
-    results = []
-    for data_name in data_list:
-        results.append(main(llm, tokenizer, data_name, args))
+        # add "avg" result to data_list and results
+        data_list.append("avg")
+        results.append(
+            {
+                "acc": sum([result["acc"] for result in results]) / len(results),
+            }
+        )
 
-    # add "avg" result to data_list and results
-    data_list.append("avg")
-    results.append(
-        {
-            "acc": sum([result["acc"] for result in results]) / len(results),
-        }
-    )
-
-    # print all results
-    pad = max([len(data_name) for data_name in data_list])
-    print("\t".join(data_name.ljust(pad, " ") for data_name in data_list))
-    print("\t".join([f"{result['acc']:.1f}".ljust(pad, " ") for result in results]))
+        # print all results
+        pad = max([len(data_name) for data_name in data_list])
+        print("\t".join(data_name.ljust(pad, " ") for data_name in data_list))
+        print("\t".join([f"{result['acc']:.1f}".ljust(pad, " ") for result in results]))
 
 
 def is_multi_choice(answer):
@@ -150,8 +187,8 @@ def is_multi_choice(answer):
     return True
 
 
-def main(llm, tokenizer, data_name, args):
-    examples, processed_samples, out_file = prepare_data(data_name, args)
+def main(llm, tokenizer, data_name, args, cot_id):
+    examples, processed_samples, out_file = prepare_data(data_name, args, max_samples=128, cot_id=cot_id)
     print("\n" + "-" * 50)
     print("data:", data_name, ", remain samples:", len(examples))
     if len(examples) > 0:
@@ -164,7 +201,7 @@ def main(llm, tokenizer, data_name, args):
         executor = PythonExecutor(get_answer_from_stdout=True)
 
     if args.ratio > 0 :
-        done_samples_path = "outputs/12_11/" + args.output_dir + "/" + data_name + "/" + args.split + "_" + args.prompt_type + "_" + str(args.num_test_sample) + "_seed" + str(args.seed) + "_t" + str(args.temperature) + "_s" + str(args.start) + "_e" + str(args.end)  + ".jsonl"
+        done_samples_path = f"outputs/12_11/" + args.output_dir + "/" + data_name + "/" + args.split + "_" + args.prompt_type + "_" + str(args.num_test_sample) + "_seed" + str(args.seed) + "_t" + str(args.temperature) + "_s" + str(args.start) + "_e" + str(args.end)  + ".jsonl"
         done_samples = list(load_jsonl(done_samples_path))
     else:
         done_samples = []
@@ -269,7 +306,7 @@ def main(llm, tokenizer, data_name, args):
         num_prompts = len(prompts)
         chunk_size = (num_prompts + 9) // 10  # 计算每一份的大小，确保包含所有的 prompts
         outputs = []
-
+        
         for i in range(0, num_prompts, chunk_size):
             chunk = prompts[i:i + chunk_size]  # 获取当前的 chunk
             if args.use_vllm:
@@ -288,7 +325,7 @@ def main(llm, tokenizer, data_name, args):
                         ),
                     ),
                 )
-
+                
                 chunk_outputs = sorted(
                     chunk_outputs, key=lambda x: int(x.request_id)
                 )  # sort outputs by request_id
@@ -303,7 +340,6 @@ def main(llm, tokenizer, data_name, args):
                     stop_id_sequences=stop_words,
                 )
                 outputs.extend(chunk_outputs)
-
         assert len(outputs) == len(current_prompts)
 
         # process all outputs

@@ -166,6 +166,14 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n", 
     ),
+    "parallel-corse-to-fine": (
+        "<|im_start|>system\nSolve the task using multiple reasoning paths. Each reasoning path must include: \n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Focus on accuracy and correctness.\nTruncate overly lengthy reasoning. \nPut final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n"
+        "<|im_start|>user\n{input}<|im_end|>\n"
+        "<|im_start|>assistant\n",
+        "{output}",
+        "\n\n", 
+    ),
+
     "mathstral": (
         "{input}\nPlease reason step by step, and put your final answer within \\boxed{{}}.",
         "{output}",

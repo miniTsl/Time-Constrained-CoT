@@ -1,10 +1,4 @@
 # common
-vllm
-tqdm
-datasets
-torch
-transformers
-python_dateutil
 flash_attn
 
 # math_eval
