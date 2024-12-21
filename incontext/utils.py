@@ -35,6 +35,14 @@ def load_pth(file):
     import torch
     return torch.load(file)
 
+def dump_json(file, data):
+    with open(file, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False)
+
+def load_json(file):
+    with open(file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
 def retry_query_gptv2(prompt: str, model_name: str='gpt-3.5-turbo-16k', retry_times=12):
     from openai import OpenAI
     client = OpenAI(

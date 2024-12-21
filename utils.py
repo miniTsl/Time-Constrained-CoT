@@ -48,6 +48,14 @@ def lower_keys(example):
             new_example[key] = value
     return new_example
 
+def dump_json(file, data):
+    with open(file, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False)
+
+def load_json(file):
+    with open(file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
 
 EXAMPLES = get_examples()
 
@@ -166,8 +174,15 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n", 
     ),
-    "parallel-corse-to-fine": (
-        "<|im_start|>system\nSolve the task using multiple reasoning paths. Each reasoning path must include: \n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Focus on accuracy and correctness.\nTruncate overly lengthy reasoning. \nPut final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n"
+    # "parallel-corse-to-fine": (
+    #     "<|im_start|>system\nSolve the task using multiple reasoning paths. Each reasoning path must include: \n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Focus on accuracy and correctness.\nTruncate overly lengthy reasoning. \nPut final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n"
+    #     "<|im_start|>user\n{input}<|im_end|>\n"
+    #     "<|im_start|>assistant\n",
+    #     "{output}",
+    #     "\n\n", 
+    # ),
+    "in-context-corse-to-fine": (
+        "<|im_start|>system\nSolve the task using multiple reasoning paths. Each reasoning path must include: \n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Focus on accuracy and correctness.\nTruncate overly lengthy reasoning. \nPut final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n."
         "<|im_start|>user\n{input}<|im_end|>\n"
         "<|im_start|>assistant\n",
         "{output}",
@@ -194,23 +209,27 @@ PROMPT_TEMPLATES = {
 }
 
 
-def construct_prompt(example, data_name, args):
-    if args.adapt_few_shot and data_name in [
-        "gaokao2024_I",
-        "gaokao2024_II",
-        "gaokao_math_qa",
-        "gaokao2024_mix",
-        "cn_middle_school",
-    ]:
-        demos = load_prompt(data_name, args.prompt_type, 5)
-    else:
-        demos = load_prompt(data_name, args.prompt_type, args.num_shots)
+def construct_prompt(example, data_name, args, demos=None):
+    # 12.20: I added demos argue, which represents in-context cot demos. 
+    if not demos:
+        if args.adapt_few_shot and data_name in [
+            "gaokao2024_I",
+            "gaokao2024_II",
+            "gaokao_math_qa",
+            "gaokao2024_mix",
+            "cn_middle_school",
+        ]:
+            demos = load_prompt(data_name, args.prompt_type, 5)
+        else:
+            demos = load_prompt(data_name, args.prompt_type, args.num_shots)
+
     prompt_type = args.prompt_type
     if prompt_type == "platypus_fs":
         prompt_type = "cot"
     if prompt_type == "tool-integrated":
         prompt_type = "tora"
 
+    # here, we choose the prompt templates as coarse-to-fine
     prompt_temp = PROMPT_TEMPLATES[args.prompt_type]
 
     input_template, output_template, splitter = (

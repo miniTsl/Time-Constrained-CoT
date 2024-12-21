@@ -10,7 +10,7 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
     if [[ ${MODEL_NAME_OR_PATH} == *"0.5B"* ]]; then
         export CUDA_VISIBLE_DEVICES="6, 7"
     else
-        export CUDA_VISIBLE_DEVICES="2,5,6,7"
+        export CUDA_VISIBLE_DEVICES="7"
     fi
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
@@ -31,7 +31,8 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
 
 
     # corse-to-fine-structured
-    PROMPT_TYPE="corse-to-fine-structured"
+    # PROMPT_TYPE="corse-to-fine-structured"
+    PROMPT_TYPE="in-context-corse-to-fine"
     RATIO=-1
 
     bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${RATIO} ${OUTPUT_DIR} ${TEMPERATURE}
