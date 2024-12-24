@@ -15,6 +15,9 @@ from data_loader import load_data
 from python_executor import PythonExecutor
 from model_utils import load_hf_lm_and_tokenizer, generate_completions
 import json
+import tiktoken
+from transformers import Qwen2Tokenizer
+
 
 def dump2json(data, filename):
     with open(filename, 'w') as f:
@@ -54,6 +57,7 @@ def parse_args():
 
     parser.add_argument("--cot_nums", type=int, default=1)
     parser.add_argument("--merge_cots", action="store_true", help="whether it is the stage to merge 10 cot paths into one prompt, query LLM about the final result")
+    parser.add_argument("--merge_cot_nums", type=int, default=20)
 
     args = parser.parse_args()
     args.top_p = (1 if args.temperature == 0 else args.top_p)  # top_p must be 1 when using greedy sampling (vllm)
@@ -61,15 +65,55 @@ def parse_args():
         args.max_tokens_per_call = 50
     return args
 
+
 def get_merged_cots(cot_answers, ratio):
     merged_thoughts = ''
     for i in range(len(cot_answers)):
         merged_thoughts += f'Reasoning path {i}: {cot_answers[i]}\n'
 
-def crop_cot(cot, ratio):
-    cut_cot = cot[:int(len(cot)*ratio)]
-    # 将prompt中的<|im_start|>assistant\n换成新内容
-    full_prompt = full_prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n")
+def crop_cot(cot, token_budget, tokenizer):
+    
+    tokens = tokenizer.tokenize(cot)
+    if len(tokens) <= token_budget:
+        return cot
+    
+    # 初始化偏移量
+    offsets = []
+    current_position = 0
+
+    for token in tokens[:token_budget]:
+        # 去掉分词前缀（如特殊符号）以提取纯文本部分
+        token_text = token.replace("Ġ", "").strip()
+        token_text = token_text.replace("Ċ", "").strip()
+        # 当前部分逐字匹配，避免使用 `find`
+        start = current_position
+        end = start + len(token_text)
+        
+        # 检查匹配的文本是否与 token_text 对应
+        if cot[start:end] != token_text:
+            while start < len(cot) and cot[start:end] != token_text:
+                start += 1
+                end = start + len(token_text)
+        
+        # 添加偏移量并更新当前位置
+        offsets.append((start, end))
+        current_position = end
+    return cot[:current_position]
+
+    
+
+def get_target_token_num(args, done_samples_path, tokenizer):
+    reasoning_result_datas = load_jsonl(done_samples_path)
+    answer_lens = []
+    for reasoning_data in reasoning_result_datas:
+        token_num = len(tokenizer.tokenize(reasoning_data['code'][0]))
+        answer_lens.append(token_num)  
+    max_answer_len = max(answer_lens)
+    if max_answer_len > 1000:
+        max_answer_len = 1000
+    print('max_answer_len:', max_answer_len)
+    target_token_num = int(max_answer_len * args.ratio)
+    return target_token_num
 
 def prepare_data(data_name, args, max_samples=None, cot_id=None):
     examples = load_data(data_name, args.split, args.data_dir)
@@ -97,10 +141,10 @@ def prepare_data(data_name, args, max_samples=None, cot_id=None):
     # get out_file name
     dt_string = datetime.now().strftime("%m-%d_%H-%M")
     model_name = "/".join(args.model_name_or_path.split("/")[-2:])
-    out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
+    out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}_merge_cot{args.merge_cot_nums}" if args.prompt_type == 'merge-cot' else f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
     output_dir = args.output_dir
     if not os.path.exists(output_dir):
-        output_dir = f"outputs/12_11/{output_dir}"
+        output_dir = f"outputs/12_24/{output_dir}"
     if not cot_id:
         if args.ratio > 0 :
             out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_r{args.ratio}.jsonl"
@@ -186,11 +230,51 @@ def is_multi_choice(answer):
             return False
     return True
 
+def get_all_cots(cot_folders_path):
+    # iterate all files under the path
+    cot_datas = {}
+    for root, dirs, files in os.walk(cot_folders_path):
+        for file in files:
+            file_name = os.path.join(root, file)
+            if "_metrics" not in file_name:
+                if '_cot_' not in file_name:
+                    cot_id = 0
+                else:
+                    cot_id = int(file_name.split('_cot_')[-1].split('.')[0])
+                cot_data = list(load_jsonl(file_name))
+                cot_datas[cot_id] = cot_data
+    cot_data_list = [0 for _ in range(1000)] 
+    for cot_id, cot_data in cot_datas.items():
+        cot_data_list[cot_id] = cot_data
+    # remove 0s from the list
+    cot_datas = [cot_data for cot_data in cot_data_list if cot_data != 0]
+    return cot_datas
+
+
+def get_cot_answers(problem_id, cot_datas, topk=5):
+    cot_answers = []
+    for cot_data in cot_datas:
+        for data_sample in cot_data:
+            if data_sample["idx"] == problem_id:
+                cot_answer = data_sample['code'][0].split('**Final Answer**')[0]
+                cot_answers.append(cot_answer)
+                break
+    if len(cot_answers) < topk:
+        return ''.join(cot_answers)
+    return ''.join(cot_answers[:topk])
+
 
 def main(llm, tokenizer, data_name, args, cot_id):
     examples, processed_samples, out_file = prepare_data(data_name, args, max_samples=128, cot_id=cot_id)
     print("\n" + "-" * 50)
     print("data:", data_name, ", remain samples:", len(examples))
+
+    # tokenizer = Qwen2Tokenizer.from_pretrained("Qwen/Qwen-tokenizer")
+    if not tokenizer:
+        tokenizer = AutoTokenizer.from_pretrained(
+                args.model_name_or_path, trust_remote_code=True
+            )
+
     if len(examples) > 0:
         print(examples[0])
 
@@ -201,14 +285,20 @@ def main(llm, tokenizer, data_name, args, cot_id):
         executor = PythonExecutor(get_answer_from_stdout=True)
 
     if args.ratio > 0 :
-        done_samples_path = f"outputs/12_11/" + args.output_dir + "/" + data_name + "/" + args.split + "_" + args.prompt_type + "_" + str(args.num_test_sample) + "_seed" + str(args.seed) + "_t" + str(args.temperature) + "_s" + str(args.start) + "_e" + str(args.end)  + ".jsonl"
+        done_samples_path = f"outputs/12_24/" + args.output_dir + "/" + data_name + "/" + args.split + "_" + args.prompt_type + "_" + str(args.num_test_sample) + "_seed" + str(args.seed) + "_t" + str(args.temperature) + "_s" + str(args.start) + "_e" + str(args.end)  + ".jsonl"
         done_samples = list(load_jsonl(done_samples_path))
+        token_budget = get_target_token_num(args, done_samples_path, tokenizer)
     else:
         done_samples = []
+        token_budget = -1
     done_samples = {sample["idx"]: sample for sample in done_samples}
     
     samples = []
     print("\nProcessing", len(examples), "examples", "=" * 50)
+
+    if args.prompt_type == "merge-cot":
+        cot_datas = get_all_cots(f"/home/wenhao/Time-Constrained-CoT/outputs/12_11/models--Qwen--Qwen2.5-3B-Instruct/math")
+        
     for example in tqdm(examples, total=len(examples)):
         idx = example["idx"]
 
@@ -218,11 +308,17 @@ def main(llm, tokenizer, data_name, args, cot_id):
             continue
         gt_cot, gt_ans = parse_ground_truth(example, data_name)
         example["gt_ans"] = gt_ans
-        full_prompt = construct_prompt(example, data_name, args)
+
+        if args.prompt_type == "merge-cot":
+            cots = get_cot_answers(idx, cot_datas, topk=args.merge_cot_nums)
+            full_prompt = construct_prompt(example, data_name, args, cots=cots)
+        else:
+            full_prompt = construct_prompt(example, data_name, args)
         # # add ratio part of complete cot
         if args.ratio > 0 :
             done_cot = done_samples[idx]["code"][0]
-            cut_cot = done_cot[:int(len(done_cot)*args.ratio)]
+            cut_cot = crop_cot(done_cot, token_budget, tokenizer)
+            # cut_cot = done_cot[:int(len(done_cot)*args.ratio)]
             # 将prompt中的<|im_start|>assistant\n换成新内容
             full_prompt = full_prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n")
 
@@ -304,7 +400,10 @@ def main(llm, tokenizer, data_name, args, cot_id):
         prompts = [item[1] for item in current_prompts]
         # 为了防止内存爆炸，将prompts分成4份，每份调用一次vllm
         num_prompts = len(prompts)
-        chunk_size = (num_prompts + 9) // 10  # 计算每一份的大小，确保包含所有的 prompts
+        if num_prompts < 300:
+            chunk_size = num_prompts
+        else:
+            chunk_size = (num_prompts + 9) // 10  # 计算每一份的大小，确保包含所有的 prompts
         outputs = []
         
         for i in range(0, num_prompts, chunk_size):

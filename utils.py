@@ -209,8 +209,14 @@ PROMPT_TEMPLATES = {
 }
 
 
-def construct_prompt(example, data_name, args, demos=None):
+def construct_prompt(example, data_name, args, demos=None, cots=None):
     # 12.20: I added demos argue, which represents in-context cot demos. 
+
+    if args.prompt_type == "merge-cot":
+        problem = example["question"]
+        prompt = f'''Solve the task using multiple reasoning paths. Each reasoning path must include: \n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Focus on accuracy and correctness.\nTruncate overly lengthy reasoning. \nYou need to judge the most promising solution within the reasoning paths, and put final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n<|im_start|>user\n{problem}<|im_end|>\n<|im_start|>assistant\n{cots}\n\nFinal answer within \\boxed{{}}:\n'''
+        return prompt
+
     if not demos:
         if args.adapt_few_shot and data_name in [
             "gaokao2024_I",

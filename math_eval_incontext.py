@@ -325,7 +325,7 @@ def main(llm, tokenizer, data_name, args, cot_id):
         prompts = [item[1] for item in current_prompts]
         # 为了防止内存爆炸，将prompts分成4份，每份调用一次vllm
         num_prompts = len(prompts)
-        if num_prompts < 500:
+        if num_prompts < 300:
             chunk_size = num_prompts
         else:
             chunk_size = (num_prompts + 9) // 10  # 计算每一份的大小，确保包含所有的 prompts

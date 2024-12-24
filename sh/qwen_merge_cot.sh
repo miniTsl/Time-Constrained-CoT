@@ -31,17 +31,16 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
 
 
     # corse-to-fine-structured
-    PROMPT_TYPE="corse-to-fine-structured"
-    # PROMPT_TYPE="in-context-corse-to-fine"
+    # PROMPT_TYPE="corse-to-fine-structured"
+    PROMPT_TYPE="merge-cot"
     RATIO=-1
     SCRIPT_NAME="math_eval.py"
-    COT_NUMS=1
 
-    # bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${RATIO} ${OUTPUT_DIR} ${TEMPERATURE} ${SCRIPT_NAME} ${COT_NUMS}
+    bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${RATIO} ${OUTPUT_DIR} ${TEMPERATURE} ${SCRIPT_NAME}
 
-    for RATIO in $(seq 0.2 0.1 1.0); do
-        echo "Processing ratio: ${RATIO}"
-        bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${RATIO} ${OUTPUT_DIR} ${TEMPERATURE} ${SCRIPT_NAME} ${COT_NUMS}
-    done
+    # for RATIO in $(seq 0.2 0.2 1.0); do
+    #     echo "Processing ratio: ${RATIO}"
+    #     bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} $RATIO ${OUTPUT_DIR} ${TEMPERATURE}
+    # done
 
 done

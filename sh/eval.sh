@@ -5,6 +5,8 @@ MODEL_NAME_OR_PATH=$2
 RATIO=$3
 OUTPUT_DIR=$4
 TEMPERATURE=$5
+SCRIPT_NAME=$6
+COT_NUMS=$7
 
 SPLIT="test"
 NUM_TEST_SAMPLE=-1
@@ -13,7 +15,7 @@ NUM_TEST_SAMPLE=-1
 # DATA_NAME="gsm8k,math,svamp,asdiv,mawps,carp_en,tabmwp,minerva_math,gaokao2023en,olympiadbench,college_math"
 DATA_NAME="math"
 TOKENIZERS_PARALLELISM=false \
-python3 -u math_eval_incontext.py \
+python3 -u ${SCRIPT_NAME} \
     --model_name_or_path ${MODEL_NAME_OR_PATH} \
     --data_name ${DATA_NAME} \
     --output_dir ${OUTPUT_DIR} \
@@ -30,7 +32,8 @@ python3 -u math_eval_incontext.py \
     --use_vllm \
     --save_outputs \
     --overwrite \
-    --use_safetensors
+    --use_safetensors \
+    --cot_nums ${COT_NUMS}
 
 # # English multiple-choice datasets
 # DATA_NAME="aqua,sat_math,mmlu_stem"
