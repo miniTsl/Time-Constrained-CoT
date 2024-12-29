@@ -8,7 +8,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from evaluate import evaluate
-from utils import set_seed, load_jsonl, save_jsonl, construct_prompt
+from utils import set_seed, load_jsonl, save_jsonl, construct_prompt, set_output_path
 from parser import *
 from trajectory import *
 from data_loader import load_data
@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument("--temperature", default=0, type=float)
     parser.add_argument("--n_sampling", default=1, type=int)
     parser.add_argument("--top_p", default=1, type=float)
-    parser.add_argument("--max_tokens_per_call", default=8192, type=int)
+    parser.add_argument("--max_tokens_per_call", default=4096, type=int)
     parser.add_argument("--shuffle", action="store_true")
     parser.add_argument("--use_vllm", action="store_true")
     parser.add_argument("--save_outputs", action="store_true")
@@ -68,15 +68,9 @@ def prepare_data(data_name, args):
     # get out_file name
     dt_string = datetime.now().strftime("%m-%d_%H-%M")
     model_name = "/".join(args.model_name_or_path.split("/")[-2:])
-    out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
-    output_dir = args.output_dir
-    if not os.path.exists(output_dir):
-        output_dir = f"outputs/12_11/{output_dir}"
-    if args.ratio > 0 :
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_r{args.ratio}.jsonl"
-    else:
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
-    os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)
+    
+    # get out_file_prefix, output_dir and out_file
+    out_file_prefix, output_dir, out_file = set_output_path(args, data_name)
 
     # load all processed samples
     processed_samples = []
@@ -163,8 +157,9 @@ def main(llm, tokenizer, data_name, args):
     else:
         executor = PythonExecutor(get_answer_from_stdout=True)
 
+    # load done samples
     if args.ratio > 0 :
-        done_samples_path = "outputs/12_11/" + args.output_dir + "/" + data_name + "/" + args.split + "_" + args.prompt_type + "_" + str(args.num_test_sample) + "_seed" + str(args.seed) + "_t" + str(args.temperature) + "_s" + str(args.start) + "_e" + str(args.end)  + ".jsonl"
+        done_samples_path = out_file.replace("_r" + str(args.ratio), "")
         done_samples = list(load_jsonl(done_samples_path))
     else:
         done_samples = []
@@ -186,8 +181,10 @@ def main(llm, tokenizer, data_name, args):
         if args.ratio > 0 :
             done_cot = done_samples[idx]["code"][0]
             cut_cot = done_cot[:int(len(done_cot)*args.ratio)]
-            # 将prompt中的<|im_start|>assistant\n换成新内容
-            full_prompt = full_prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n")
+            # # 将prompt中的<|im_start|>assistant\n换成新内容
+            # full_prompt = full_prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n")
+            # 直接在prompt的后面添加新内容
+            full_prompt = full_prompt + cut_cot + "\n\nFinal answer within \\boxed{{}}:\n"
 
         if idx == args.start:
             print(full_prompt)
@@ -265,9 +262,9 @@ def main(llm, tokenizer, data_name, args):
 
         # get all outputs
         prompts = [item[1] for item in current_prompts]
-        # 为了防止内存爆炸，将prompts分成4份，每份调用一次vllm
+        # spilt prompts into chunks to avoid OOM
         num_prompts = len(prompts)
-        chunk_size = (num_prompts + 9) // 10  # 计算每一份的大小，确保包含所有的 prompts
+        chunk_size = (num_prompts + 4) // 5  # 确保包含所有的 prompts
         outputs = []
 
         for i in range(0, num_prompts, chunk_size):
@@ -409,7 +406,7 @@ def main(llm, tokenizer, data_name, args):
     )
 
     with open(
-        out_file.replace(".jsonl", f"_{args.prompt_type}_metrics.json"), "w"
+        out_file.replace(".jsonl", "_metrics.json"), "w"
     ) as f:
         json.dump(result_json, f, indent=4)
     return result_json

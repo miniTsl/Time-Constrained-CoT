@@ -6,9 +6,84 @@ import os
 import numpy as np
 from pathlib import Path
 from typing import Iterable, Union, Any
-
+from transformers import AutoTokenizer
 from examples import get_examples
+import torch
 
+def gen_budget_list(budget, data_name):
+    if budget <0:
+        return [-1]
+    else: 
+        if data_name == "gsm8k":
+            budget_list = []
+            for i in range(25, 500, 25):
+                budget_list.append(i)
+            for i in range(500, 1001, 50):
+                budget_list.append(i)
+        elif data_name == "math":
+            budget_list = []
+            for i in range(25, 1000, 25):
+                budget_list.append(i)
+            for i in range(1000, 1501, 50):
+                budget_list.append(i)
+        return budget_list
+
+
+def load_data_with_cropped_cot(full_cot_path, args):
+    TERMINATOR="\n\n**Final Answer**\n"
+    samples = list(load_jsonl(full_cot_path))
+    full_cots = [sample["code"][0] for sample in samples]
+    
+    # use tokenizer to batch crop full_cots
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, padding_side="right")
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
+    full_cots_tokens = tokenizer(full_cots, return_tensors="pt", padding=True).input_ids
+    cot_lengths = (full_cots_tokens != tokenizer.pad_token_id).sum(dim=1)
+    truncate_lengths = torch.minimum(cot_lengths, torch.tensor(args.budget))
+    mask = torch.arange(full_cots_tokens.shape[1])[None, :] <= truncate_lengths[:, None]
+    # Apply mask to get truncated sequences
+    part_cots_tokens = full_cots_tokens.masked_fill(~mask, tokenizer.pad_token_id)
+    part_cots = tokenizer.batch_decode(part_cots_tokens, skip_special_tokens=True)
+    # if full_cot is less than or equal to budget, consider it as processed
+    processed_samples = [sample for sample in samples if cot_lengths[sample["idx"]] <= args.budget]
+    # Create index mapping for samples that need processing
+    process_indices = [i for i, sample in enumerate(samples) if cot_lengths[sample["idx"]] > args.budget]
+    # Filter samples and part_cots using the same indices
+    samples = [samples[i] for i in process_indices]
+    part_cots = [part_cots[i] for i in process_indices]
+    
+    # Modify samples in-place
+    for sample, part_cot in zip(samples, part_cots):
+        prompt = sample["prompt"]
+        
+        if args.prompt_type == "coarse-to-fine-qwen" or args.prompt_type == "qwen25-math-cot":
+            sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
+                                            "<|im_start|>assistant\n" + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type == "mathstral-step-by-step" or args.prompt_type == "mathstral-coarse-to-fine":
+            sample["prompt"] = prompt.replace("[/INST]",
+                                            "[/INST] " + part_cot)
+            sample["prompt"] += TERMINATOR
+        else:
+            pass
+        sample.pop("code")
+        sample.pop("pred")
+        sample.pop("report")
+        sample.pop("score")
+        
+    return samples, processed_samples
+
+def set_output_path(args, data_name):
+    # args.output_dir defines experiment path,such as outputs/12_25
+    output_dir = os.path.join(args.output_dir, args.model_name_or_path, args.prompt_type)
+    out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
+    if args.budget > 0 :
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.budget)}.jsonl"
+    else:
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
+    os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)
+    return out_file_prefix, output_dir, out_file
 
 def set_seed(seed: int = 42) -> None:
     np.random.seed(seed)
@@ -139,37 +214,40 @@ PROMPT_TEMPLATES = {
         "\n\n",
     ),
     "qwen25-math-cot": (
-        "<|im_start|>system\nPlease reason step by step, and put your final answer within \\boxed{{}}.<|im_end|>\n"
+        "<|im_start|>system\nPlease reason step by step, and put your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.<|im_end|>\n"
         "<|im_start|>user\n{input}<|im_end|>\n"
         "<|im_start|>assistant\n",
         "{output}",
         "\n\n",
     ),
-    "corse-to-fine": (
-        "<|im_start|>system\nPlease reason step-by-step, and put your final answer within \\boxed{{}}. However, considering output time(token) limit, you should do corse grained reasoning first and get an answer quickly. Then you can do fine grained reasoning to check and verify your answer. This way, even if the inference process is interrupted, you can still output a reasoning that's good enough to solve the task.<|im_end|>\n"
-        "<|im_start|>user\n{input}<|im_end|>\n"
-        "<|im_start|>assistant\n",
-        "{output}",
-        "\n\n",
-    ),
-    # "corse-to-fine-structured": (
-    #     "<|im_start|>system\nPerform the task in two types of reasoning:\n1. Coarse-Grained Reasoning: quick analysis and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: detailed analysis and a refined answer. Foucus on accuracy and correctness.\n\nFor both types, you MUST:\n- reason step by step.\n- put your final answer within \\boxed{{}}.\n\nOutput format:\n<Coarse Reasoning>: ...\n<Coarse Answer>: ...\n\n<Fine Reasoning>: ...\n<Fine Answer>: ...\n\n<Final Answer><|im_end|>\n"
-    #     "<|im_start|>user\n{input}<|im_end|>\n"
-    #     "<|im_start|>assistant\n",
-    #     "{output}",
-    #     "\n\n", 
-    # ),
-    "corse-to-fine-structured": (
-        "<|im_start|>system\nSolve the task through two types of reasoning:\n1. Coarse-Grained Reasoning: give quick analysis step by step and an answer. Focus on efficiency and simplicity.\n2. Fine-Grained Reasoning: give detailed analysis step by step and a refined answer. Foucus on accuracy and correctness.\nPut final answer within \\boxed{{}}.\n\nOutput format:\n**Coarse Reasoning**\n\n**Fine Reasoning**\n\n**Final Answer** within \\boxed{{}}<|im_end|>\n"
+    "coarse-to-fine-qwen": (
+        "<|im_start|>system\nSolve the task by following format:\n**Coarse Reasoning**\nShort analysis and an answer. Focus on efficiency and simplicity.\n\n**Fine Reasoning**\nDetailed analysis step by step and a refined answer. Focus on accuracy and correctness.\n\n**Final Answer** \nYour final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.<|im_end|>\n"
         "<|im_start|>user\n{input}<|im_end|>\n"
         "<|im_start|>assistant\n",
         "{output}",
         "\n\n", 
     ),
-    "mathstral": (
-        "{input}\nPlease reason step by step, and put your final answer within \\boxed{{}}.",
+    "qwen25-step-by-step-hard": (
+        "<|im_start|>system\nPlease reason step by step, and put your final answer within \\boxed{{}}.\n<|im_end|>\n"
+        "<|im_start|>user\n{input}<|im_end|>\n"
+        "<|im_start|>assistant\n",
         "{output}",
         "\n\n",
+    ),
+    "mathstral-step-by-step-hard": (
+        "<s>[INST] Please reason step by step, and put your final answer within \\boxed{{}}.\n\n{input}[/INST]",
+        "{output}",
+        "\n\n",
+    ),
+    "mathstral-step-by-step": (
+        "<s>[INST] Please reason step by step, and put your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.\n\n{input}[/INST]",
+        "{output}",
+        "\n\n",
+    ),
+    "mathstral-coarse-to-fine": (
+        "<s>[INST] Solve the task by following format:\n**Coarse Reasoning**\nShort analysis and an answer. Focus on efficiency and simplicity.\n\n**Fine Reasoning**\nDetailed analysis step by step and a refined answer. Focus on accuracy and correctness.\n\n**Final Answer** \nYour final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.\n\n{input}[/INST]",
+        "{output}",
+        "\n\n", 
     ),
     "internlm-math-fs": ("Question:{input}\nAnswer:", "{output}", "\n"),
     "internlm-math-chat": (
@@ -291,3 +369,17 @@ def show_sample(sample, print_all_preds=False):
             _key = key_map.get(key, key)
             print("{}: {}".format(_key, repr(sample[key])))
     print()
+
+if __name__ == "__main__":
+    full_cot_path = "outputs/12_26/Qwen/Qwen2.5-7B-Instruct/coarse-to-fine-qwen/gsm8k/test_coarse-to-fine-qwen_-1_seed0_t0.0_s0_e-1.jsonl"
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name_or_path", type=str, default="Qwen/Qwen2.5-7B-Instruct")
+    parser.add_argument("--prompt_type", type=str, default="coarse-to-fine-qwen")
+    args = parser.parse_args()
+    budget = 500
+    samples = ""
+    # print(get_appended_prompt(full_cot_path, samples, args, budget)[0])
+    # # print element by element
+    # for i, element in enumerate(get_appended_prompt(full_cot_path, samples, args, budget)):
+    #     print(f"Element {i}: {element}")

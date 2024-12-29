@@ -2,7 +2,7 @@ set -ex
 
 PROMPT_TYPE=$1
 MODEL_NAME_OR_PATH=$2
-RATIO=$3
+BUDGET=$3
 OUTPUT_DIR=$4
 
 SPLIT="test"
@@ -10,9 +10,9 @@ NUM_TEST_SAMPLE=-1
 
 # English open datasets
 # DATA_NAME="gsm8k,math,svamp,asdiv,mawps,carp_en,tabmwp,minerva_math,gaokao2023en,olympiadbench,college_math"
-DATA_NAME="math,gsm8k"
+DATA_NAME="gsm8k,math"
 TOKENIZERS_PARALLELISM=false \
-python3 -u math_eval.py \
+python3 -u eval_hard.py \
     --model_name_or_path ${MODEL_NAME_OR_PATH} \
     --data_name ${DATA_NAME} \
     --output_dir ${OUTPUT_DIR} \
@@ -25,11 +25,13 @@ python3 -u math_eval.py \
     --top_p 1 \
     --start 0 \
     --end -1 \
-    --ratio ${RATIO} \
+    --budget ${BUDGET} \
     --use_vllm \
     --save_outputs \
     --overwrite \
     --use_safetensors
+# overwtite is important for debugging
+
 
 # # English multiple-choice datasets
 # DATA_NAME="aqua,sat_math,mmlu_stem"
