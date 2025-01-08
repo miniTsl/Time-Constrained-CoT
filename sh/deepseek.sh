@@ -1,20 +1,14 @@
 # 定义模型列表为数组
-MODEL_LIST=(Qwen/QwQ-32B-Preview)
+MODEL_LIST=(deepseek-ai/deepseek-math-7b-instruct deepseek-ai/deepseek-math-7b-rl)
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    # 如果是0.5B的模型，则只使用6和7两张GPU，否则使用4，5，6，7四张GPU
-    if [[ ${MODEL_NAME_OR_PATH} == *"0.5B"* ]]; then
-        export CUDA_VISIBLE_DEVICES="1,2"
-    else
-        export CUDA_VISIBLE_DEVICES="1,2,3,4"
-    fi
+    export CUDA_VISIBLE_DEVICES="6,7"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
-
     # original
-    PROMPT_TYPE="qwen25-math-cot"
+    PROMPT_TYPE="deepseek-step-by-step"
     BUDGET=-1
     OUTPUT_DIR=outputs/12_26
 
@@ -25,7 +19,7 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
 
 
     # coarse-to-fine
-    PROMPT_TYPE="coarse-to-fine-qwen"
+    PROMPT_TYPE="deepseek-coarse-to-fine"
     BUDGET=-1
     OUTPUT_DIR=outputs/12_26
     bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}
@@ -33,8 +27,9 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
     BUDGET=1
     bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}
 
+
     # hard
-    PROMPT_TYPE="qwen25-step-by-step-hard"
+    PROMPT_TYPE="deepseek-step-by-step-hard"
     OUTPUT_DIR=outputs/12_26
     BUDGET=1
     bash sh/eval_hard.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}

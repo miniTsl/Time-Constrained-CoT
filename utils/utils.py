@@ -8,12 +8,16 @@ from pathlib import Path
 from typing import Iterable, Union, Any
 from transformers import AutoTokenizer
 from examples import get_examples
+from prompts import PROMPT_TEMPLATES
 import torch
+
 
 def gen_budget_list(budget, data_name):
     if budget <0:
         return [-1]
-    else: 
+    elif budget == 0:
+        return [25]
+    else:
         if data_name == "gsm8k":
             budget_list = []
             for i in range(25, 500, 25):
@@ -64,6 +68,18 @@ def load_data_with_cropped_cot(full_cot_path, args):
         elif args.prompt_type == "mathstral-step-by-step" or args.prompt_type == "mathstral-coarse-to-fine":
             sample["prompt"] = prompt.replace("[/INST]",
                                             "[/INST] " + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type == "skywork-step-by-step" or args.prompt_type == "skywork-coarse-to-fine":
+            sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",
+                                            "assistant<|end_header_id|>\n\n" + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type == "deepseek-step-by-step" or args.prompt_type == "deepseek-coarse-to-fine":
+            sample["prompt"] = prompt.replace("Assistant:",
+                                            "Assistant:" + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type == "smallthinker-step-by-step" or args.prompt_type == "smallthinker-coarse-to-fine":
+            sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
+                                            "<|im_start|>assistant\n" + part_cot)
             sample["prompt"] += TERMINATOR
         else:
             pass
@@ -124,10 +140,10 @@ def lower_keys(example):
     return new_example
 
 
-EXAMPLES = get_examples()
-
 
 def load_prompt(data_name, prompt_type, num_shots):
+    EXAMPLES = get_examples()
+    
     if not num_shots:
         return []
 
@@ -151,117 +167,6 @@ def load_prompt(data_name, prompt_type, num_shots):
 
     return EXAMPLES[data_name][:num_shots]
 
-
-PROMPT_TEMPLATES = {
-    "direct": ("Question: {input}\nAnswer: ", "{output}", "\n\n"),
-    "cot": ("Question: {input}\nAnswer: ", "{output}", "\n\n\n"),
-    "pal": ("Question: {input}\n\n", "{output}", "\n---\n"),
-    "tool-integrated": ("Question: {input}\n\nSolution:\n", "{output}", "\n---\n"),
-    "self-instruct": ("<|user|>\n{input}\n<|assistant|>\n", "{output}", "\n"),
-    "tora": ("<|user|>\n{input}\n<|assistant|>\n", "{output}", "\n"),
-    "wizard_zs": (
-        "### Instruction:\n{input}\n\n### Response: Let's think step by step.",
-        "{output}",
-        "\n\n\n",
-    ),
-    "platypus_fs": (
-        "### Instruction:\n{input}\n\n### Response:\n",
-        "{output}",
-        "\n\n\n",
-    ),
-    "deepseek-math": (
-        "User: {input}\nPlease reason step by step, "
-        "and put your final answer within \\boxed{{}}.\n\nAssistant:",
-        "{output}",
-        "\n\n\n",
-    ),
-    "kpmath": (
-        "User: Please reason step by step and put your final answer at the end "
-        'with "The answer is: ".\n\n{input}\n\nAssistant:',
-        "{output}",
-    ),
-    "jiuzhang": (
-        "## Question\n{input}\n\n## Solution\n",
-        "{output}",
-        "\n\n\n",
-    ),
-    "jiuzhang_tora": (
-        "## Question\n{input}\n\n## Code Solution\n",
-        "{output}",
-        "\n\n\n",
-    ),
-    "jiuzhang_nl": (
-        "## Question\n{input}\n\n## Natural Language Solution\n",
-        "{output}",
-        "\n\n\n",
-    ),
-    "mmiqc": (
-        'Please solve the following problem and put your answer at the end with "The answer is: ".\n\n{input}\n\n',
-        "{output}",
-        "\n\n\n",
-    ),
-    "abel": (
-        "Question:\n{input}\nAnswer:\nLet's think step by step.\n",
-        "{output}",
-        "\n\n",
-    ),
-    "shepherd": ("{input}\n", "{output}", "\n\n\n"),
-    "qwen-boxed": (
-        "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
-        "<|im_start|>user\n{input}\nPlease reason step by step, and put your final answer within \\boxed{{}}.<|im_end|>\n"
-        "<|im_start|>assistant\n",
-        "{output}",
-        "\n\n",
-    ),
-    "qwen25-math-cot": (
-        "<|im_start|>system\nPlease reason step by step, and put your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.<|im_end|>\n"
-        "<|im_start|>user\n{input}<|im_end|>\n"
-        "<|im_start|>assistant\n",
-        "{output}",
-        "\n\n",
-    ),
-    "coarse-to-fine-qwen": (
-        "<|im_start|>system\nSolve the task by following format:\n**Coarse Reasoning**\nShort analysis and an answer. Focus on efficiency and simplicity.\n\n**Fine Reasoning**\nDetailed analysis step by step and a refined answer. Focus on accuracy and correctness.\n\n**Final Answer** \nYour final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.<|im_end|>\n"
-        "<|im_start|>user\n{input}<|im_end|>\n"
-        "<|im_start|>assistant\n",
-        "{output}",
-        "\n\n", 
-    ),
-    "qwen25-step-by-step-hard": (
-        "<|im_start|>system\nPlease reason step by step, and put your final answer within \\boxed{{}}.\n<|im_end|>\n"
-        "<|im_start|>user\n{input}<|im_end|>\n"
-        "<|im_start|>assistant\n",
-        "{output}",
-        "\n\n",
-    ),
-    "mathstral-step-by-step-hard": (
-        "<s>[INST] Please reason step by step, and put your final answer within \\boxed{{}}.\n\n{input}[/INST]",
-        "{output}",
-        "\n\n",
-    ),
-    "mathstral-step-by-step": (
-        "<s>[INST] Please reason step by step, and put your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.\n\n{input}[/INST]",
-        "{output}",
-        "\n\n",
-    ),
-    "mathstral-coarse-to-fine": (
-        "<s>[INST] Solve the task by following format:\n**Coarse Reasoning**\nShort analysis and an answer. Focus on efficiency and simplicity.\n\n**Fine Reasoning**\nDetailed analysis step by step and a refined answer. Focus on accuracy and correctness.\n\n**Final Answer** \nYour final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.\n\n{input}[/INST]",
-        "{output}",
-        "\n\n", 
-    ),
-    "internlm-math-fs": ("Question:{input}\nAnswer:", "{output}", "\n"),
-    "internlm-math-chat": (
-        "<|im_start|>user\n{input}<|im_end|>\n" "<|im_start|>assistant\n",
-        "{output}",
-        "\n\n",
-    ),
-    "mistral": (
-        "[INST] {input}[/INST]",
-        "{output}",
-        "\n\n",
-    ),
-    "numina": ("### Problem: {input}\n### Solution:", " {output}", "\n\n"),
-}
 
 
 def construct_prompt(example, data_name, args):

@@ -1,5 +1,14 @@
 # 定义模型列表为数组
-MODEL_LIST=(Qwen/QwQ-32B-Preview)
+MODEL_LIST=(
+    Qwen/QwQ-32B-Preview
+    Qwen/Qwen2.5-32B-Instruct
+    Qwen/Qwen2.5-14B-Instruct
+    Qwen/Qwen2.5-7B-Instruct
+    Qwen/Qwen2.5-3B-Instruct
+    Qwen/Qwen2.5-1.5B-Instruct
+    mistralai/Mathstral-7B-v0.1
+    Skywork/Skywork-o1-Open-Llama-3.1-8B
+)
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
@@ -39,4 +48,6 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
     BUDGET=1
     bash sh/eval_hard.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}
 
+    # all
+    
 done

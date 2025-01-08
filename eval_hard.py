@@ -1,3 +1,6 @@
+# eval_hard的代码和eval的区别在于，前者的budget肯定是1，具体的budget体现在model generate的max_tokens_per_call，不需要截取完整CoT让模型进行总结，而只是硬截断大模型的输出
+# eval中的max_tokens_per_call是固定的235，需要截取完整CoT让模型进行总结，budget体现在截取CoT的长度
+
 import random
 import os
 import argparse
@@ -8,7 +11,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 
 from evaluate import evaluate
-from utils import set_seed, load_jsonl, save_jsonl, construct_prompt, set_output_path, gen_budget_list
+from utils.utils import set_seed, load_jsonl, save_jsonl, construct_prompt, set_output_path, gen_budget_list
 from parser import *
 from trajectory import *
 from data_loader import load_data

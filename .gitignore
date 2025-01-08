@@ -4,3 +4,4 @@ plot/*.png
 plot/old/*.png
 *.pyc
 *.pycache*
+latency/*

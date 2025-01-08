@@ -8,7 +8,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 
 from evaluate import evaluate
-from utils import set_seed, load_jsonl, save_jsonl, construct_prompt, set_output_path, gen_budget_list, load_data_with_cropped_cot
+from utils.utils import set_seed, load_jsonl, save_jsonl, construct_prompt, set_output_path, gen_budget_list, load_data_with_cropped_cot
 from parser import *
 from trajectory import *
 from data_loader import load_data
@@ -177,6 +177,7 @@ def main(llm, tokenizer, data_name, args):
             # add remain fields
             for key in [
                 "level",
+                "subject",
                 "type",
                 "unit",
                 "solution_type",
