@@ -12,24 +12,38 @@ from prompts import PROMPT_TEMPLATES
 import torch
 
 
-def gen_budget_list(budget, data_name):
-    if budget <0:
+def gen_budget_list(budget, data_name, model):
+    if budget < 0:
         return [-1]
     elif budget == 0:
         return [25]
     else:
-        if data_name == "gsm8k":
-            budget_list = []
-            for i in range(25, 500, 25):
-                budget_list.append(i)
-            for i in range(500, 1001, 50):
-                budget_list.append(i)
-        elif data_name == "math":
-            budget_list = []
-            for i in range(25, 1000, 25):
-                budget_list.append(i)
-            for i in range(1000, 1501, 50):
-                budget_list.append(i)
+        if model in ["Qwen/QwQ-32B-Preview", "Skywork/Skywork-o1-Open-Llama-3.1-8B", "PowerInfer/SmallThinker-3B-Preview"]:
+            if data_name == "gsm8k":
+                budget_list = []
+                for i in range(25, 600, 25):
+                    budget_list.append(i)
+                for i in range(600, 1001, 50):
+                    budget_list.append(i)
+            elif data_name == "math":
+                budget_list = []
+                for i in range(25, 600, 25):
+                    budget_list.append(i)
+                for i in range(600, 1801, 50):
+                    budget_list.append(i)
+        else:    
+            if data_name == "gsm8k":
+                budget_list = []
+                for i in range(25, 601, 25):
+                    budget_list.append(i)
+                # for i in range(600, 1001, 50):
+                #     budget_list.append(i)
+            elif data_name == "math":
+                budget_list = []
+                for i in range(25, 600, 25):
+                    budget_list.append(i)
+                for i in range(600, 1201, 50):
+                    budget_list.append(i)
         return budget_list
 
 
@@ -61,26 +75,38 @@ def load_data_with_cropped_cot(full_cot_path, args):
     for sample, part_cot in zip(samples, part_cots):
         prompt = sample["prompt"]
         
-        if args.prompt_type == "coarse-to-fine-qwen" or args.prompt_type == "qwen25-math-cot":
+        if args.prompt_type.startswith("qwen"):
             sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
                                             "<|im_start|>assistant\n" + part_cot)
             sample["prompt"] += TERMINATOR
-        elif args.prompt_type == "mathstral-step-by-step" or args.prompt_type == "mathstral-coarse-to-fine":
+        elif args.prompt_type.startswith("mistral"):
             sample["prompt"] = prompt.replace("[/INST]",
                                             "[/INST] " + part_cot)
             sample["prompt"] += TERMINATOR
-        elif args.prompt_type == "skywork-step-by-step" or args.prompt_type == "skywork-coarse-to-fine":
-            sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",
-                                            "assistant<|end_header_id|>\n\n" + part_cot)
+        elif args.prompt_type.startswith("phi3"):
+            sample["prompt"] = prompt.replace("<|assistant|>\n",
+                                            "<|assistant|>\n" + part_cot)
             sample["prompt"] += TERMINATOR
-        elif args.prompt_type == "deepseek-step-by-step" or args.prompt_type == "deepseek-coarse-to-fine":
-            sample["prompt"] = prompt.replace("Assistant:",
-                                            "Assistant:" + part_cot)
+        elif args.prompt_type.startswith("phi4"):
+            sample["prompt"] = prompt.replace("<|im_start|>assistant<|im_sep|>",
+                                            "<|im_start|>assistant<|im_sep|>" + part_cot)
             sample["prompt"] += TERMINATOR
-        elif args.prompt_type == "smallthinker-step-by-step" or args.prompt_type == "smallthinker-coarse-to-fine":
-            sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
-                                            "<|im_start|>assistant\n" + part_cot)
+        elif args.prompt_type.startswith("gemma"):
+            sample["prompt"] = prompt.replace("<start_of_turn>model\n",
+                                            "<start_of_turn>model\n" + part_cot)
             sample["prompt"] += TERMINATOR
+        # elif args.prompt_type.startswith("skywork"):
+        #     sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",
+        #                                     "assistant<|end_header_id|>\n\n" + part_cot)
+        #     sample["prompt"] += TERMINATOR
+        # elif args.prompt_type.startswith("deepseek"):
+        #     sample["prompt"] = prompt.replace("Assistant:",
+        #                                     "Assistant:" + part_cot)
+        #     sample["prompt"] += TERMINATOR
+        # elif args.prompt_type.startswith("smallthinker"):
+        #     sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
+        #                                     "<|im_start|>assistant\n" + part_cot)
+        #     sample["prompt"] += TERMINATOR
         else:
             pass
         sample.pop("code")

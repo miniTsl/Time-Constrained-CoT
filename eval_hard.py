@@ -1,5 +1,5 @@
 # eval_hard的代码和eval的区别在于，前者的budget肯定是1，具体的budget体现在model generate的max_tokens_per_call，不需要截取完整CoT让模型进行总结，而只是硬截断大模型的输出
-# eval中的max_tokens_per_call是固定的235，需要截取完整CoT让模型进行总结，budget体现在截取CoT的长度
+# eval中的max_tokens_per_call是固定的25，需要截取完整CoT让模型进行总结，budget体现在截取CoT的长度
 
 import random
 import os
@@ -84,7 +84,7 @@ def setup(args):
     # infer & eval
     data_list = args.data_names.split(",")
     for data_name in data_list:
-        budget_list = gen_budget_list(args.budget, data_name)
+        budget_list = gen_budget_list(args.budget, data_name, args.model_name_or_path)
         for budget in budget_list:
             print("\n" + "-" * 50)
             print("Budget list:", budget_list)
@@ -116,28 +116,33 @@ def prepare_data(data_name, args):
     examples = examples[args.start : len(examples) if args.end == -1 else args.end]
     # load all processed samples
     processed_samples = []
-    if not args.overwrite:
-        processed_files = [
-            f
-            for f in os.listdir(f"{output_dir}/{data_name}/")
-            if f.endswith(".jsonl") and f.startswith(out_file_prefix)
-        ]
-        for f in processed_files:
-            processed_samples.extend(
-                list(load_jsonl(f"{output_dir}/{data_name}/{f}"))
-            )
+    # if not args.overwrite:
+    #     processed_files = [
+    #         f
+    #         for f in os.listdir(f"{output_dir}/{data_name}/")
+    #         if f.endswith(".jsonl") and f.startswith(out_file_prefix)
+    #     ]
+    #     for f in processed_files:
+    #         processed_samples.extend(
+    #             list(load_jsonl(f"{output_dir}/{data_name}/{f}"))
+    #         )
     # dedepulicate
     processed_samples = {sample["idx"]: sample for sample in processed_samples}
     processed_idxs = list(processed_samples.keys())
     processed_samples = list(processed_samples.values())
     examples = [example for example in examples if example["idx"] not in processed_idxs]
 
-        
     return examples, processed_samples, out_file
 
 
 def main(llm, tokenizer, data_name, args):
     examples, processed_samples, out_file = prepare_data(data_name, args)
+    # if outfile exists, return
+    if os.path.exists(out_file):
+        print(f"File {out_file} exists, skipping inference.")
+        with open(out_file.replace(".jsonl", "_metrics.json"), "r") as f:
+            result_json = json.load(f)
+        return result_json
     
     print("-" * 50)
     print("data:", data_name, ", samples to infer:", len(examples))
