@@ -25,11 +25,10 @@ models=(
 # mistralai/Mistral-Nemo-Instruct-2407
 # mistralai/Mistral-Small-Instruct-2409
 microsoft/phi-4
-microsoft/Phi-3-mini-128k-instruct
-microsoft/Phi-3-small-128k-instruct
-microsoft/Phi-3-medium-128k-instruct
-microsoft/Phi-3.5-mini-instruct
-mistralai/Mistral-7B-Instruct-v0.3
+# microsoft/Phi-3-mini-128k-instruct
+# microsoft/Phi-3-small-128k-instruct
+# microsoft/Phi-3-medium-128k-instruct
+# microsoft/Phi-3.5-mini-instruct
 )
 
 # 遍历每个模型并下载
