@@ -1,5 +1,13 @@
 ### Requirements
+
+ours:
+
+Follow the instructions in [env_requirements/README.md](env_requirements/README.md) to install the required packages.
+
+original:
+
 You can install the required packages with the following command:
+
 ```bash
 cd latex2sympy
 pip install -e .

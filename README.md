@@ -211,6 +211,12 @@ Feel free to reproduce the results of all instruction models in the Qwen2.5-Math
 
 ### Requirements
 
+ours:
+
+Follow the instructions in [env_requirements/README.md](env_requirements/README.md) to install the required packages.
+
+original:
+
 Before the evaluation, please install the required packages with the following command:
 
 ```bash
