@@ -45,5 +45,9 @@ model_list=(
 )
 
 for model in "${model_list[@]}"; do
-    rsync -avz --info=progress2  -e  "ssh -p 2233" /data03/sunyi/hf_cache/hub/models--microsoft--Phi-3.5-mini-instruct sunyi@10.0.0.10:/data/sunyi/hf_cache/hub/models--microsoft--Phi-3.5-mini-instruct
+    model_name=$(echo "$model" | sed 's/\//--/g')  # Replace slashes with double dashes
+    local_path="/data03/sunyi/hf_cache/hub/models--${model_name}"
+    remote_path="sunyi@10.0.0.10:/data/sunyi/hf_cache/hub/"
+    echo "local_path: $local_path"
+    # rsync -avz --info=progress2 -e "ssh -p 2233" "$local_path" "$remote_path"
 done
