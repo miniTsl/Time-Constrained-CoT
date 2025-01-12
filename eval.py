@@ -73,7 +73,6 @@ def setup(args):
     else:
         llm, tokenizer = load_hf_lm_and_tokenizer(
             model_name_or_path=args.model_name_or_path,
-            load_in_half=True,
             use_fast_tokenizer=True,
             use_safetensors=args.use_safetensors,
         )
@@ -286,7 +285,7 @@ def main(llm, tokenizer, data_name, args):
                     tokenizer=tokenizer,
                     prompts=chunk,
                     max_new_tokens=args.max_tokens_per_call,
-                    batch_size=16,
+                    batch_size=32,
                     stop_id_sequences=stop_words,
                 )
                 outputs.extend(chunk_outputs)

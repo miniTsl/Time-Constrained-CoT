@@ -66,7 +66,7 @@ def setup(args):
             tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
             pipeline_parallel_size=args.pipeline_parallel_size,
             trust_remote_code=True,
-            gpu_memory_utilization=0.8
+            gpu_memory_utilization=0.85
         )
         tokenizer = None
         if args.apply_chat_template:
@@ -76,7 +76,6 @@ def setup(args):
     else:
         llm, tokenizer = load_hf_lm_and_tokenizer(
             model_name_or_path=args.model_name_or_path,
-            load_in_half=True,
             use_fast_tokenizer=True,
             use_safetensors=args.use_safetensors,
         )
@@ -247,10 +246,7 @@ def main(llm, tokenizer, data_name, args):
         prompts = [item[1] for item in current_prompts]
         # spilt prompts into chunks to avoid OOM
         num_prompts = len(prompts)
-        if num_prompts > 500:
-            chunk_size = (num_prompts + 9) // 10  # 确保包含所有的 prompts
-        else:
-            chunk_size = num_prompts
+        chunk_size = min(num_prompts, 750)
         outputs = []
 
         for i in range(0, num_prompts, chunk_size):
@@ -282,7 +278,7 @@ def main(llm, tokenizer, data_name, args):
                     tokenizer=tokenizer,
                     prompts=chunk,
                     max_new_tokens=args.max_tokens_per_call,
-                    batch_size=16,
+                    batch_size=32,
                     stop_id_sequences=stop_words,
                 )
                 outputs.extend(chunk_outputs)

@@ -31,6 +31,7 @@ mistralai/Mistral-Small-Instruct-2409
 # microsoft/Phi-3-medium-128k-instruct
 # microsoft/Phi-3.5-mini-instruct
 NovaSky-AI/Sky-T1-32B-Preview
+google/gemma-2-27b-it
 )
 
 # 遍历每个模型并下载
