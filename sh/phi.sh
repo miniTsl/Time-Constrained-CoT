@@ -1,15 +1,15 @@
 # 定义模型列表为数组
 MODEL_LIST=(
-    # "microsoft/Phi-3-mini-128k-instruct"
-    # "microsoft/Phi-3-small-128k-instruct"
-    # "microsoft/Phi-3-medium-128k-instruct"
+    "microsoft/Phi-3-mini-128k-instruct"
+    "microsoft/Phi-3-small-128k-instruct"
+    "microsoft/Phi-3-medium-128k-instruct"
     "microsoft/Phi-3.5-mini-instruct"
-    # "microsoft/phi-4"
+    "microsoft/phi-4"
 )
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="4,5"
+    export CUDA_VISIBLE_DEVICES="0,1,2,3"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     

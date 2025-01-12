@@ -1,12 +1,12 @@
 # 定义模型列表为数组
 MODEL_LIST=(
     "google/gemma-2-9b-it"
-    "google/gemma-2-2b-it"
+    # "google/gemma-2-2b-it"
 )
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="1"
+    export CUDA_VISIBLE_DEVICES="0,1"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     

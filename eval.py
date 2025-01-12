@@ -204,8 +204,9 @@ def main(llm, tokenizer, data_name, args):
     else:
         samples = examples
     
-    print("\nPrompt of No.0 sample:")
-    print(samples[0]["prompt"])
+    if len(samples) > 0:
+        print("\nPrompt of No.0 sample:")
+        print(samples[0]["prompt"])
     
     # repeat n times
     input_prompts = [sample["prompt"] for sample in samples for _ in range(args.n_sampling)]

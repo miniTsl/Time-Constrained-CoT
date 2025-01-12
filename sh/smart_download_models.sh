@@ -22,9 +22,10 @@ models=(
 # internlm/internlm2-chat-20b
 # internlm/internlm2-chat-1_8b
 # mistralai/Mistral-7B-Instruct-v0.3
-# mistralai/Mistral-Nemo-Instruct-2407
-# mistralai/Mistral-Small-Instruct-2409
-microsoft/phi-4
+mistralai/Mistral-Nemo-Instruct-2407
+mistralai/Mistral-Small-Instruct-2409
+# mistralai/Ministral-8B-Instruct-2410
+# microsoft/phi-4
 # microsoft/Phi-3-mini-128k-instruct
 # microsoft/Phi-3-small-128k-instruct
 # microsoft/Phi-3-medium-128k-instruct
@@ -34,5 +35,5 @@ microsoft/phi-4
 # 遍历每个模型并下载
 for model in "${models[@]}"
 do
-   ./hf_guohong.sh $model  --exclude  "*.ckpt" "*.pth" "consolidated.safetensors" # --token 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 
+   ./hf_guohong.sh $model  --exclude  "*.ckpt" "*.pth" #"consolidated.safetensors" # --token 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 
 done

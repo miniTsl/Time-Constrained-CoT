@@ -1,10 +1,9 @@
 # 定义模型列表为数组
-MODEL_LIST=(Qwen/QwQ-32B-Preview Qwen/Qwen2.5-32B-Instruct Qwen/Qwen2.5-14B-Instruct)
-# Qwen/Qwen2.5-7B-Instruct Qwen/Qwen2.5-3B-Instruct Qwen/Qwen2.5-1.5B-Instruct)
+MODEL_LIST=(Qwen/Qwen2.5-7B-Instruct Qwen/Qwen2.5-3B-Instruct Qwen/Qwen2.5-1.5B-Instruct)
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="4,5,6,7"
+    export CUDA_VISIBLE_DEVICES="1"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
