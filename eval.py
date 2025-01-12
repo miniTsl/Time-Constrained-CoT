@@ -63,7 +63,7 @@ def setup(args):
             tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
             pipeline_parallel_size=args.pipeline_parallel_size,
             trust_remote_code=True,
-            gpu_memory_utilization=0.8
+            gpu_memory_utilization=0.9
         )
         tokenizer = None
         if args.apply_chat_template:
@@ -254,10 +254,7 @@ def main(llm, tokenizer, data_name, args):
         prompts = [item[1] for item in current_prompts]
         # spilt prompts into chunks to avoid OOM
         num_prompts = len(prompts)
-        if num_prompts > 500:
-            chunk_size = (num_prompts + 9) // 10  # 确保包含所有的 prompts
-        else:
-            chunk_size = num_prompts
+        chunk_size = min(num_prompts, 750)
         outputs = []
 
         for i in range(0, num_prompts, chunk_size):
