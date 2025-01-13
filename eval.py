@@ -58,13 +58,24 @@ def setup(args):
     # load model
     available_gpus = os.environ["CUDA_VISIBLE_DEVICES"].split(",")
     if args.use_vllm:
-        llm = LLM(
-            model=args.model_name_or_path,
-            tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
-            pipeline_parallel_size=args.pipeline_parallel_size,
-            trust_remote_code=True,
-            gpu_memory_utilization=0.85
-        )
+        if args.model_name_or_path == "microsoft/Phi-3-small-128k-instruct":
+            # Phi-3-small doesn't support prefix caching or chunked prefill because it uses BlockSparse Attention, which is relatively new.
+            llm = LLM(
+                model=args.model_name_or_path,
+                tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
+                pipeline_parallel_size=args.pipeline_parallel_size,
+                trust_remote_code=True,
+                gpu_memory_utilization=0.85,
+                enable_chunked_prefill=False
+            )
+        else:
+            llm = LLM(
+                model=args.model_name_or_path,
+                tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
+                pipeline_parallel_size=args.pipeline_parallel_size,
+                trust_remote_code=True,
+                gpu_memory_utilization=0.85,
+            )
         tokenizer = None
         if args.apply_chat_template:
             tokenizer = AutoTokenizer.from_pretrained(
