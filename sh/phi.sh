@@ -1,15 +1,15 @@
 # 定义模型列表为数组
 MODEL_LIST=(
     # "microsoft/Phi-3-mini-128k-instruct"
-    # "microsoft/Phi-3-small-128k-instruct"
+    "microsoft/Phi-3-small-128k-instruct"
     # "microsoft/Phi-3-medium-128k-instruct"
-    # "microsoft/Phi-3.5-mini-instruct"
-    "microsoft/phi-4"
+    "microsoft/Phi-3.5-mini-instruct"
+    # "microsoft/phi-4"
 )
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="2,3"
+    export CUDA_VISIBLE_DEVICES="3"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
@@ -36,7 +36,7 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
     PROMPT_TYPE="${PROMPT_PREFIX}-sbs"
     BUDGET=-1
     OUTPUT_DIR=outputs/1_10
-    bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}
+    bash sh/eval_tf.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}
 
     # BUDGET=1
     # bash sh/eval.sh ${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}

@@ -86,9 +86,10 @@ def setup(args):
             print("Budget list:", budget_list)
             print("Current budget:", budget)
             args.budget = budget
-            # set max_tokens_per_call = 25 when using token limit
-            if budget > 0:
-                args.max_tokens_per_call = 25
+            if budget > 0 and "hard" in args.prompt_type:
+                args.max_tokens_per_call = budget   # hard crop
+            elif budget > 0 and "hard" not in args.prompt_type:
+                args.max_tokens_per_call = 25   # models should summarize the answer with 25 new tokens
             result = main(llm, tokenizer, data_name, args)
             print("-" * 50)
             print(f"Data: {data_name}")
@@ -100,7 +101,12 @@ def prepare_data(data_name, args):
     # get out_file_prefix, output_dir and out_file
     out_file_prefix, output_dir, out_file = set_output_path(args, data_name)
     
-    if args.budget < 0:
+    # if outfile exists, return
+    if os.path.exists(out_file):
+        return out_file_prefix, output_dir, out_file
+    
+    # if using hard crop or original run of soft crop, load samples from original dataset
+    if args.budget < 0 or "hard" in args.prompt_type:
         examples = load_data(data_name, args.split, args.data_dir)
         # sample `num_test_sample` from dataset， -1 for full data
         if args.num_test_sample > 0:
@@ -156,8 +162,8 @@ def main(llm, tokenizer, data_name, args):
     else:
         executor = PythonExecutor(get_answer_from_stdout=True)
     
-    # if using budget, load samples from existing file
-    if args.budget < 0:
+    # if using hard crop or original run of soft crop, load samples from existing file
+    if args.budget < 0 or "hard" in args.prompt_type:
         samples = []
         print("\nProcessing", len(examples), "examples", "=" * 50)
         # process each example
@@ -285,7 +291,7 @@ def main(llm, tokenizer, data_name, args):
                     tokenizer=tokenizer,
                     prompts=chunk,
                     max_new_tokens=args.max_tokens_per_call,
-                    batch_size=32,
+                    batch_size=256,
                     stop_id_sequences=stop_words,
                 )
                 outputs.extend(chunk_outputs)
