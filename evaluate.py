@@ -110,7 +110,18 @@ def evaluate(data_name, prompt_type, samples: list=None, file_path: str=None, ma
         subject_scores = {k: np.round(np.array(v).mean() * 100, decimals=1) for k, v in subject_scores.items()}
         subject_scores = {k: v for k, v in sorted(subject_scores.items(), key=lambda item: item[0])}
         result_json['subject_acc'] = subject_scores
-        
+    
+    # each subfield score
+    if "subfield" in samples[0]:
+        subfield_scores = {}
+        for sample in samples:
+            if sample['subfield'] not in subfield_scores:
+                subfield_scores[sample['subfield']] = []
+            subfield_scores[sample['subfield']].append(sample['score'][-1])
+        subfield_scores = {k: np.round(np.array(v).mean() * 100, decimals=1) for k, v in subfield_scores.items()}
+        subfield_scores = {k: v for k, v in sorted(subfield_scores.items(), key=lambda item: item[0])}
+        result_json['subfield_acc'] = subfield_scores
+    
     print(result_json)
     return samples, result_json
 

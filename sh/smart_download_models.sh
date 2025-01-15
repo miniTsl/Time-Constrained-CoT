@@ -22,16 +22,22 @@ models=(
 # internlm/internlm2-chat-20b
 # internlm/internlm2-chat-1_8b
 # mistralai/Mistral-7B-Instruct-v0.3
-mistralai/Mistral-Nemo-Instruct-2407
-mistralai/Mistral-Small-Instruct-2409
+# mistralai/Mistral-Nemo-Instruct-2407
+# mistralai/Mistral-Small-Instruct-2409
 # mistralai/Ministral-8B-Instruct-2410
 # microsoft/phi-4
 # microsoft/Phi-3-mini-128k-instruct
 # microsoft/Phi-3-small-128k-instruct
 # microsoft/Phi-3-medium-128k-instruct
 # microsoft/Phi-3.5-mini-instruct
-NovaSky-AI/Sky-T1-32B-Preview
-google/gemma-2-27b-it
+# NovaSky-AI/Sky-T1-32B-Preview
+# google/gemma-2-27b-it
+THUDM/glm-4-9b-chat
+THUDM/glm-edge-1.5b-chat
+THUDM/glm-edge-4b-chat
+01-ai/Yi-1.5-6B-Chat
+01-ai/Yi-1.5-9B-Chat-16K
+01-ai/Yi-1.5-34B-Chat-16K
 )
 
 # 遍历每个模型并下载

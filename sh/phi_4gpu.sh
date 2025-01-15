@@ -8,11 +8,15 @@ MODEL_LIST=(
 )
 
 PROMPT_TYPE_LIST=(
+    "quick"
+    "direct"
     "sbs"
     "c2f"
     "aav"
     "kf"
     "sbs-hard"
+    "direct-hard"
+    "quick-hard"
 )
 
 
@@ -35,8 +39,8 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
     OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
     for PROMPT_TYPE in "${PROMPT_TYPE_LIST[@]}"; do
-        # step-by-step hard
-        if [[ ${PROMPT_TYPE} == "sbs-hard" ]]; then
+        # hard
+        if [[ ${PROMPT_TYPE} == *"hard"* ]]; then
             BUDGET=1
             bash sh/eval.sh ${PROMPT_PREFIX}-${PROMPT_TYPE} ${MODEL_NAME_OR_PATH} ${BUDGET} ${OUTPUT_DIR}
         else

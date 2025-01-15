@@ -1,5 +1,17 @@
+# quick hard
+quick_hard = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}}."""
+
+# direct hard
+direct_hard = """Solve the problem and put your final answer within \\boxed{{}}."""
+
 # Step-by-step hard
 sbs_hard = """Please reason step by step, and put your final answer within \\boxed{{}}."""
+
+# quick
+quick = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}} when done or early-stop keyword **Final Answer** appears."""
+
+# direct
+direct = """Solve the problem and put your final answer within \\boxed{{}} when done or early-stop keyword **Final Answer** appears."""
 
 # Step-by-step
 sbs = """Please reason step by step, and put your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears."""
@@ -128,8 +140,28 @@ PROMPT_TEMPLATES = {
     #     "\n\n",
     # ),
     # ************** Qwen Series **************
+    "qwen-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     "qwen-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-quick": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-direct": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
@@ -154,8 +186,28 @@ PROMPT_TEMPLATES = {
         "\n\n", 
     ),
     # ************** Mistral Series **************
+    "mistral-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "mistral-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     "mistral-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "mistral-quick": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "mistral-direct": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
@@ -180,9 +232,29 @@ PROMPT_TEMPLATES = {
         "\n\n", 
     ),
     # ************** Phi Series **************
+    "phi3mini-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3mini-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     ## phi3mini
     "phi3mini-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3mini-quick": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3mini-direct": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
@@ -208,8 +280,28 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi3small
+    "phi3small-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3small-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi3small-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3small-quick": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3small-direct": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
@@ -235,8 +327,28 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi3medium
+    "phi3medium-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3medium-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi3medium-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3medium-quick": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3medium-direct": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
@@ -262,8 +374,28 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi4
+    "phi4-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi4-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi4-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi4-quick": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "phi4-direct": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
@@ -289,8 +421,28 @@ PROMPT_TEMPLATES = {
     ),
     
     # ************** Gemma Series **************
+    "gemma-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "gemma-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
     "gemma-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "gemma-quick": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "gemma-direct": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
