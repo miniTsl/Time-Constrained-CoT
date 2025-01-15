@@ -210,6 +210,9 @@ unit_texts.extend([t + "s" for t in unit_texts])
 
 
 def strip_string(string, skip_unit=False):
+    """
+    Strip the string to remove unnecessary characters and change the format into formal latex format.
+    """
     string = str(string).strip()
     # linebreaks
     string = string.replace("\n", "")
@@ -527,8 +530,8 @@ def extract_answer(pred_str, data_name, use_last_number=True):
         else:
             a = ans.split("$")[0].strip()
         pred = a
-    elif "he answer is" in pred_str:
-        pred = pred_str.split("he answer is")[-1].strip()
+    elif "the answer is" in pred_str:
+        pred = pred_str.split("the answer is")[-1].strip()
     elif "final answer is" in pred_str:
         pred = pred_str.split("final answer is")[-1].strip()
     elif "答案是" in pred_str:

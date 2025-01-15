@@ -89,6 +89,28 @@ def evaluate(data_name, prompt_type, samples: list=None, file_path: str=None, ma
         type_scores = {k: v for k, v in sorted(type_scores.items(), key=lambda item: item[0])}
         result_json['type_acc'] = type_scores
 
+    # each level score
+    if "level" in samples[0]:
+        level_scores = {}
+        for sample in samples:
+            if sample['level'] not in level_scores:
+                level_scores[sample['level']] = []
+            level_scores[sample['level']].append(sample['score'][-1])
+        level_scores = {k: np.round(np.array(v).mean() * 100, decimals=1) for k, v in level_scores.items()}
+        level_scores = {k: v for k, v in sorted(level_scores.items(), key=lambda item: item[0])}
+        result_json['level_acc'] = level_scores
+        
+    # each subject score
+    if "subject" in samples[0]:
+        subject_scores = {}
+        for sample in samples:
+            if sample['subject'] not in subject_scores:
+                subject_scores[sample['subject']] = []
+            subject_scores[sample['subject']].append(sample['score'][-1])
+        subject_scores = {k: np.round(np.array(v).mean() * 100, decimals=1) for k, v in subject_scores.items()}
+        subject_scores = {k: v for k, v in sorted(subject_scores.items(), key=lambda item: item[0])}
+        result_json['subject_acc'] = subject_scores
+        
     print(result_json)
     return samples, result_json
 

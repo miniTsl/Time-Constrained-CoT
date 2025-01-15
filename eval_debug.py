@@ -241,7 +241,7 @@ def main(llm, tokenizer, data_name, args):
     remain_prompts = [(i, prompt) for i, prompt in enumerate(remain_prompts)]
     end_prompts = []
 
-    max_func_call = 1 if args.prompt_type in ["cot", "pal"] else 4
+    max_func_call = 1 if args.prompt_type in ["cot", "pal"] else 1  # LLMs can only infer once
 
     stop_words = ["</s>", "<|im_end|>", "<|endoftext|>"]
 
@@ -282,7 +282,7 @@ def main(llm, tokenizer, data_name, args):
                         temperature=args.temperature,
                         top_p=args.top_p,
                         max_tokens=args.max_tokens_per_call,
-                        n=1,
+                        n=1,    #  n: Number of output sequences to return for the given prompt.
                         stop=stop_words,
                         stop_token_ids=(
                             [151645, 151643]
@@ -309,41 +309,48 @@ def main(llm, tokenizer, data_name, args):
 
         assert len(outputs) == len(current_prompts)
 
-        # process all outputs
-        remain_prompts = []
-        remain_codes = []
+        # # process all outputs
+        # remain_prompts = []
+        # remain_codes = []
+        # for (i, query), output in zip(current_prompts, outputs):
+        #     output = output.rstrip()
+        #     query += output # append output to query prompt
+        #     if args.prompt_type == "pal":
+        #         remain_prompts.append((i, query))
+        #         if "```python" in output:
+        #             output = extract_program(query)
+        #         remain_codes.append(output)
+        #     elif args.prompt_type == "cot":
+        #         end_prompts.append((i, query))
+        #     elif "boxed" not in output and output.endswith("```"):
+        #         program = extract_program(query)
+        #         remain_prompts.append((i, query))
+        #         remain_codes.append(program)
+        #     else:
+        #         end_prompts.append((i, query))
+
+        # # execute the remain prompts
+        # remain_results = executor.batch_apply(remain_codes)
+        # for k in range(len(remain_prompts)):
+        #     i, query = remain_prompts[k]
+        #     res, report = remain_results[k]
+        #     exec_result = res if res else report
+        #     if "pal" in args.prompt_type:
+        #         exec_result = "\\boxed{" + exec_result + "}"
+        #     exec_result = f"\n```output\n{exec_result}\n```\n"
+        #     query += exec_result
+        #     # not end
+        #     if epoch == max_func_call - 1:
+        #         query += "\nReach max function call limit."
+        #     remain_prompts[k] = (i, query)
+
+        # now, we consider pure cot without any tool call
         for (i, query), output in zip(current_prompts, outputs):
             output = output.rstrip()
-            query += output
-            if args.prompt_type == "pal":
-                remain_prompts.append((i, query))
-                if "```python" in output:
-                    output = extract_program(query)
-                remain_codes.append(output)
-            elif args.prompt_type == "cot":
-                end_prompts.append((i, query))
-            elif "boxed" not in output and output.endswith("```"):
-                program = extract_program(query)
-                remain_prompts.append((i, query))
-                remain_codes.append(program)
-            else:
-                end_prompts.append((i, query))
-
-        # execute the remain prompts
-        remain_results = executor.batch_apply(remain_codes)
-        for k in range(len(remain_prompts)):
-            i, query = remain_prompts[k]
-            res, report = remain_results[k]
-            exec_result = res if res else report
-            if "pal" in args.prompt_type:
-                exec_result = "\\boxed{" + exec_result + "}"
-            exec_result = f"\n```output\n{exec_result}\n```\n"
-            query += exec_result
-            # not end
-            if epoch == max_func_call - 1:
-                query += "\nReach max function call limit."
-            remain_prompts[k] = (i, query)
-
+            query += output # append output to query prompt
+            end_prompts.append((i, query))
+        
+        
     # unsolved samples
     print("Unsolved samples:", len(remain_prompts))
     end_prompts.extend(remain_prompts)
@@ -351,6 +358,7 @@ def main(llm, tokenizer, data_name, args):
     end_prompts = sorted(end_prompts, key=lambda x: x[0])
 
     # remove input_prompt from end_prompt
+    # extract code from end_prompt before stop_words
     codes = []
     assert len(input_prompts) == len(end_prompts)
     for i in range(len(input_prompts)):
