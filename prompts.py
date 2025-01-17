@@ -328,12 +328,12 @@ PROMPT_TEMPLATES = {
     
     ## phi3medium
     "phi3medium-quick-hard": (
-        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", quick_hard),
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", quick_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
     "phi3medium-direct-hard": (
-        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", direct_hard),
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", direct_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
@@ -343,12 +343,12 @@ PROMPT_TEMPLATES = {
         "\n\n",
     ),
     "phi3medium-quick": (
-        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", quick),
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", quick + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
     "phi3medium-direct": (
-        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{system_message}", direct),
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", direct + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
@@ -422,12 +422,12 @@ PROMPT_TEMPLATES = {
     
     # ************** Gemma Series **************
     "gemma-quick-hard": (
-        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", quick_hard),
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", quick_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
     "gemma-direct-hard": (
-        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", direct_hard),
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", direct_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
@@ -437,12 +437,12 @@ PROMPT_TEMPLATES = {
         "\n\n",
     ),
     "gemma-quick": (
-        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", quick),
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", quick + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
     "gemma-direct": (
-        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{system_message}", direct),
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", direct + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
