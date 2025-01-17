@@ -1,10 +1,10 @@
 # 定义模型列表为数组
 MODEL_LIST=(
-    # "mistralai/Mistral-7B-Instruct-v0.3"
-    # "mistralai/Ministral-8B-Instruct-2410"
+    "mistralai/Mistral-7B-Instruct-v0.3"
+    "mistralai/Ministral-8B-Instruct-2410"
     "mistralai/Mistral-Nemo-Instruct-2407"
     "mistralai/Mistral-Small-Instruct-2409"
-    # "mistralai/Mathstral-7B-v0.1"
+    "mistralai/Mathstral-7B-v0.1"
 )
 
 
@@ -15,9 +15,11 @@ PROMPT_TYPE_LIST=(
     # "c2f"
     # "aav"
     # "kf"
-    "sbs-hard"
-    "direct-hard"
-    "quick-hard"
+    # "sbs-hard"
+    # "direct-hard"
+    # "quick-hard"
+    "c2f-hard"
+    "aav-hard"
 )
 
 PROMPT_PREFIX="mistral"

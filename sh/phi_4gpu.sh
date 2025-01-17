@@ -14,9 +14,11 @@ PROMPT_TYPE_LIST=(
     # "c2f"
     # "aav"
     # "kf"
-    "sbs-hard"
-    "direct-hard"
-    "quick-hard"
+    # "sbs-hard"
+    # "direct-hard"
+    # "quick-hard"
+    "c2f-hard"
+    "aav-hard"
 )
 
 OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10

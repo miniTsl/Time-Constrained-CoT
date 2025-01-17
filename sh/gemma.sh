@@ -6,15 +6,17 @@ MODEL_LIST=(
 )
 
 PROMPT_TYPE_LIST=(
-    "quick"
-    "direct"
-    "sbs"
-    "c2f"
-    "aav"
-    "kf"
-    "sbs-hard"
-    "direct-hard"
-    "quick-hard"
+    # "quick"
+    # "direct"
+    # "sbs"
+    # "c2f"
+    # "aav"
+    # "kf"
+    # "sbs-hard"
+    # "direct-hard"
+    # "quick-hard"
+    "c2f-hard"
+    "aav-hard"
 )
 
 PROMPT_PREFIX="gemma"
