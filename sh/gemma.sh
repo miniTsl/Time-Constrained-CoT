@@ -24,7 +24,7 @@ OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="2,3"
+    export CUDA_VISIBLE_DEVICES="0"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
