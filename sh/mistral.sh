@@ -1,20 +1,20 @@
 # 定义模型列表为数组
 MODEL_LIST=(
-    "mistralai/Mistral-7B-Instruct-v0.3"
-    "mistralai/Ministral-8B-Instruct-2410"
+    # "mistralai/Mistral-7B-Instruct-v0.3"
+    # "mistralai/Ministral-8B-Instruct-2410"
     "mistralai/Mistral-Nemo-Instruct-2407"
     "mistralai/Mistral-Small-Instruct-2409"
-    "mistralai/Mathstral-7B-v0.1"
+    # "mistralai/Mathstral-7B-v0.1"
 )
 
 
 PROMPT_TYPE_LIST=(
-    "quick"
-    "direct"
-    "sbs"
-    "c2f"
-    "aav"
-    "kf"
+    # "quick"
+    # "direct"
+    # "sbs"
+    # "c2f"
+    # "aav"
+    # "kf"
     "sbs-hard"
     "direct-hard"
     "quick-hard"
@@ -25,7 +25,7 @@ OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="2,3"
+    export CUDA_VISIBLE_DEVICES="4,5,6,7"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     

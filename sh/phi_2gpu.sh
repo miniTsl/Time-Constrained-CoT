@@ -8,20 +8,21 @@ MODEL_LIST=(
 )
 
 PROMPT_TYPE_LIST=(
-    "quick"
-    "direct"
-    "sbs"
-    "c2f"
-    "aav"
-    "kf"
+    # "quick"
+    # "direct"
+    # "sbs"
+    # "c2f"
+    # "aav"
+    # "kf"
     "sbs-hard"
     "direct-hard"
     "quick-hard"
 )
 
+OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="0,1"
+    export CUDA_VISIBLE_DEVICES="0,2"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
@@ -36,7 +37,6 @@ for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
         PROMPT_PREFIX="phi4"
     fi
 
-    OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
     for PROMPT_TYPE in "${PROMPT_TYPE_LIST[@]}"; do
         # hard

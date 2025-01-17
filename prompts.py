@@ -7,6 +7,39 @@ direct_hard = """Solve the problem and put your final answer within \\boxed{{}}.
 # Step-by-step hard
 sbs_hard = """Please reason step by step, and put your final answer within \\boxed{{}}."""
 
+# Coarse-to-fine hard
+c2f_hard = """Solve the task by following format:
+**Coarse Reasoning**
+Short analysis and an answer. Focus on efficiency and simplicity.
+
+**Fine Reasoning**
+Detailed analysis step by step and a refined answer. Focus on accuracy and correctness.
+
+**Final Answer**
+Your final answer within \\boxed{{}}."""
+
+# Knowledge First hard
+kf_hard = """Solve the task by following format:
+**Knowledge to Use**
+List theorem and methods that are useful for solving the problem.
+
+**Reasoning**
+Step by step analysis using above knowledge.
+
+**Final Answer**
+Your final answer within \\boxed{{}}."""
+
+# Answer and Verify hard
+aav_hard = """Solve the task by following format:
+**Quick Answer**
+Give an initial answer based on intuition or quick calculation.
+
+**Verification**
+Give a revised answer through reasoning step by step to correct potential mistakes.
+
+**Final Answer**
+Your final answer within \\boxed{{}}."""
+
 # quick
 quick = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}} when done or early-stop keyword **Final Answer** appears."""
 
@@ -155,6 +188,21 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
+    "qwen-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", kf_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", aav_hard),
+        "{output}",
+        "\n\n",
+    ),
     "qwen-quick": (
         CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick),
         "{output}",
@@ -201,6 +249,21 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
+    "mistral-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "mistral-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", kf_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "mistral-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", aav_hard),
+        "{output}",
+        "\n\n",
+    ),
     "mistral-quick": (
         CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", quick),
         "{output}",
@@ -242,9 +305,23 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
-    ## phi3mini
     "phi3mini-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3mini-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3mini-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", kf_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3mini-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", aav_hard),
         "{output}",
         "\n\n",
     ),
@@ -295,6 +372,21 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
+    "phi3small-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3small-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", kf_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3small-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", aav_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi3small-quick": (
         CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", quick),
         "{output}",
@@ -339,6 +431,21 @@ PROMPT_TEMPLATES = {
     ),
     "phi3medium-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3medium-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", c2f_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3medium-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", kf_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "phi3medium-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", aav_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
@@ -389,6 +496,21 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
+    "phi4-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi4-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", kf_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "phi4-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", aav_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi4-quick": (
         CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", quick),
         "{output}",
@@ -433,6 +555,21 @@ PROMPT_TEMPLATES = {
     ),
     "gemma-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "gemma-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", c2f_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "gemma-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", kf_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "gemma-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", aav_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),

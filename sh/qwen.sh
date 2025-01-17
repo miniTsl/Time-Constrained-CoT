@@ -9,15 +9,17 @@ MODEL_LIST=(
 )
 
 PROMPT_TYPE_LIST=(
-    "quick"
-    "direct"
-    "sbs"
-    "c2f"
-    "aav"
-    "kf"
-    "sbs-hard"
-    "direct-hard"
-    "quick-hard"
+    # "quick"
+    # "direct"
+    # "sbs"
+    # "c2f"
+    # "aav"
+    # "kf"
+    # "sbs-hard"
+    # "direct-hard"
+    # "quick-hard"
+    "c2f-hard"
+    "aav-hard"
 )
 
 PROMPT_PREFIX="qwen"
@@ -26,7 +28,7 @@ OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="4,5,6,7"   # 1.5B needs 2 GPUs
+    export CUDA_VISIBLE_DEVICES="4,5,6,7"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
