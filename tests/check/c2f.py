@@ -3,49 +3,54 @@ import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from transformers import AutoTokenizer, AutoModelForCausalLM
 model_list = [
-    "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Ministral-8B-Instruct-2410",
-    "mistralai/Mistral-Nemo-Instruct-2407",
-    "mistralai/Mistral-Small-Instruct-2409",
-    "mistralai/Mathstral-7B-v0.1",
+    # "mistralai/Mistral-7B-Instruct-v0.3",
+    # "mistralai/Ministral-8B-Instruct-2410",
+    # "mistralai/Mistral-Nemo-Instruct-2407",
+    # "mistralai/Mistral-Small-Instruct-2409",
+    # "mistralai/Mathstral-7B-v0.1",
     
-    "Qwen/Qwen2.5-32B-Instruct",
-    "Qwen/Qwen2.5-14B-Instruct",
-    "Qwen/Qwen2.5-7B-Instruct",
-    "Qwen/Qwen2.5-3B-Instruct",
-    "Qwen/Qwen2.5-1.5B-Instruct",
-    "Qwen/Qwen2.5-Math-1.5B-Instruct",
-    "Qwen/Qwen2.5-Math-7B-Instruct",
-    "Qwen/QwQ-32B-Preview",
+    # "Qwen/Qwen2.5-32B-Instruct",
+    # "Qwen/Qwen2.5-14B-Instruct",
+    # "Qwen/Qwen2.5-7B-Instruct",
+    # "Qwen/Qwen2.5-3B-Instruct",
+    # "Qwen/Qwen2.5-1.5B-Instruct",
+    # "Qwen/Qwen2.5-Math-1.5B-Instruct",
+    # "Qwen/Qwen2.5-Math-7B-Instruct",
+    # "Qwen/QwQ-32B-Preview",
     
-    "microsoft/Phi-3-mini-128k-instruct",
-    "microsoft/Phi-3-small-128k-instruct",
-    "microsoft/Phi-3-medium-128k-instruct",
-    "microsoft/Phi-3.5-mini-instruct",
-    "microsoft/phi-4",
+    # "microsoft/Phi-3-mini-128k-instruct",
+    # "microsoft/Phi-3-small-128k-instruct",
+    # "microsoft/Phi-3-medium-128k-instruct",
+    # "microsoft/Phi-3.5-mini-instruct",
+    # "microsoft/phi-4",
     
-    "meta-llama/Llama-3.2-3B-Instruct",
-    "meta-llama/Llama-3.2-1B-Instruct",
-    "meta-llama/Llama-3.1-8B-Instruct",
+    # "meta-llama/Llama-3.2-3B-Instruct",
+    # "meta-llama/Llama-3.2-1B-Instruct",
+    # "meta-llama/Llama-3.1-8B-Instruct",
     
-    "google/gemma-2-9b-it",
-    "google/gemma-2-2b-it",
+    # "google/gemma-2-9b-it",
+    # "google/gemma-2-2b-it",
 
-    "AI-MO/NuminaMath-7B-CoT",
+    # "AI-MO/NuminaMath-7B-CoT",
 
-    "internlm/internlm2_5-1_8b-chat",
-    "internlm/internlm2_5-7b-chat",
-    "internlm/internlm2_5-20b-chat",
-    "internlm/internlm2-math-plus-1_8b",
-    "internlm/internlm2-math-plus-20b",
-    "internlm/internlm2-math-plus-7b",
+    # "internlm/internlm2_5-1_8b-chat",
+    # "internlm/internlm2_5-7b-chat",
+    # "internlm/internlm2_5-20b-chat",
+    # "internlm/internlm2-math-plus-1_8b",
+    # "internlm/internlm2-math-plus-20b",
+    # "internlm/internlm2-math-plus-7b",
     
-    "deepseek-ai/deepseek-math-7b-instruct",
-    "deepseek-ai/deepseek-math-7b-rl",
+    # "deepseek-ai/deepseek-math-7b-instruct",
+    # "deepseek-ai/deepseek-math-7b-rl",
     
-    "PowerInfer/SmallThinker-3B-Preview",
-
-    "Skywork/Skywork-o1-Open-Llama-3.1-8B"
+    # "PowerInfer/SmallThinker-3B-Preview",
+    # "Skywork/Skywork-o1-Open-Llama-3.1-8B",
+    # "NovaSky-AI/Sky-T1-32B-Preview", # the same as qwen series
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    # "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
 ]
 print(len(model_list))
 
@@ -72,7 +77,9 @@ CHAT_TEMPLATE_FORMATS = {
     
     "internlm_format": "<s><|im_start|>system\n{system_message}<|im_end|>\n<|im_start|>user\n{user_message}<|im_end|>\n<|im_start|>assistant\n",
     
-    "deepseek_format": "<｜begin▁of▁sentence｜>{system_message}\n\nUser: {user_message}\n\nAssistant:"
+    "deepseek_format": "<｜begin▁of▁sentence｜>{system_message}\n\nUser: {user_message}\n\nAssistant:",
+    
+    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{user_message}<｜Assistant｜>"
 }
 
 # Then map each model to its template format
@@ -130,7 +137,17 @@ MODEL_TO_TEMPLATE = {
     "PowerInfer/SmallThinker-3B-Preview": CHAT_TEMPLATE_FORMATS["qwen_format"],  # Uses same format as Qwen
     
     # Skywork
-    "Skywork/Skywork-o1-Open-Llama-3.1-8B": CHAT_TEMPLATE_FORMATS["llama_format"]
+    "Skywork/Skywork-o1-Open-Llama-3.1-8B": CHAT_TEMPLATE_FORMATS["llama_format"],
+    
+    # Sky-T1
+    "NovaSky-AI/Sky-T1-32B-Preview": CHAT_TEMPLATE_FORMATS["qwen_format"],
+    
+    # DeepSeek-R1-Distill
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
+    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"]
 }
 
 c2f_prompt = """Solve the task by following format:
@@ -221,10 +238,16 @@ with open("c2f_q3.txt", "w") as f:
             torch_dtype="auto"
         )
         question = "How many prime numbers less than 100 have a units digit of 3?"
-        if "gemma" in checkpoint:
+        if "gemma" in checkpoint or "DeepSeek-R1-Distill" in checkpoint:
             prompt = MODEL_TO_TEMPLATE[checkpoint].format(user_message=c2f_prompt + "\n\n" + question)
         else:
             prompt = MODEL_TO_TEMPLATE[checkpoint].format(system_message=c2f_prompt, user_message=question)
+#         part = """<think>
+# To determine how many prime numbers less than 100 have a units digit of 3, I'll start by listing all numbers less than 100 that end with 3. These numbers are 3, 13, 23, 33, 43, 53, 63, 73, 83, and 93.
+
+# Next, I'll """
+#         prompt = prompt.replace("<｜Assistant｜>", "<｜Assistant｜>" + part + "\n\n**Final Answer**\n")
+#         print(prompt)
         inputs = tokenizer([prompt], return_tensors="pt").to(model.device)
         out = model.generate(**inputs, max_new_tokens=4096, do_sample=False)
         generated_ids = out[0][len(inputs.input_ids[0]):]

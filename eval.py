@@ -93,8 +93,10 @@ def setup(args):
     for data_name in data_list:
         budget_list = gen_budget_list(args.budget, data_name, args.model_name_or_path)
         if "hard" in args.prompt_type:
-            # append 4096 to budget_list
+            # budget_list.append(2048)
             budget_list.append(4096)
+            # budget_list.append(8192)
+            # budget_list.append(16384)
         for budget in budget_list:
             print("\n" + "-" * 50)
             print("Budget list:", budget_list)

@@ -18,7 +18,18 @@ def gen_budget_list(budget, data_name, model):
     elif budget == 0:
         return [25]
     else:
-        if model in ["Qwen/QwQ-32B-Preview", "Skywork/Skywork-o1-Open-Llama-3.1-8B", "PowerInfer/SmallThinker-3B-Preview"]:
+        o1_like_models = [
+            "Qwen/QwQ-32B-Preview", 
+            "Skywork/Skywork-o1-Open-Llama-3.1-8B", 
+            "PowerInfer/SmallThinker-3B-Preview",
+            "NovaSky-AI/Sky-T1-32B-Preview", 
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+            "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
+        ]
+        if model in o1_like_models:
             if data_name == "gsm8k":
                 budget_list = []
                 for i in range(25, 600, 25):
@@ -94,6 +105,10 @@ def load_data_with_cropped_cot(full_cot_path, args):
         elif args.prompt_type.startswith("gemma"):
             sample["prompt"] = prompt.replace("<start_of_turn>model\n",
                                             "<start_of_turn>model\n" + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type.startswith("deepseek-r1-distill"):
+            sample["prompt"] = prompt.replace("<｜Assistant｜>",
+                                            "<｜Assistant｜>" + part_cot)
             sample["prompt"] += TERMINATOR
         # elif args.prompt_type.startswith("skywork"):
         #     sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",
@@ -175,7 +190,7 @@ def load_prompt(data_name, prompt_type, num_shots):
 
     if data_name in ["gsm_hard", "svamp", "tabmwp", "asdiv", "mawps"]:
         data_name = "gsm8k"
-    if data_name in ["math_oai", "hungarian_exam", "math-oai", "aime24", "amc23"]:
+    if data_name in ["math_oai", "hungarian_exam", "math-oai", "aime24", "amc23", "math", "math500"]:
         data_name = "math"
     if data_name in ["sat_math"]:
         data_name = "mmlu_stem"

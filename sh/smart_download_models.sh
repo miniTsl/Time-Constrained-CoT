@@ -32,16 +32,22 @@ models=(
 # microsoft/Phi-3.5-mini-instruct
 # NovaSky-AI/Sky-T1-32B-Preview
 # google/gemma-2-27b-it
-THUDM/glm-4-9b-chat
-THUDM/glm-edge-1.5b-chat
-THUDM/glm-edge-4b-chat
-01-ai/Yi-1.5-6B-Chat
-01-ai/Yi-1.5-9B-Chat-16K
-01-ai/Yi-1.5-34B-Chat-16K
+# THUDM/glm-4-9b-chat
+# THUDM/glm-edge-1.5b-chat
+# THUDM/glm-edge-4b-chat
+# 01-ai/Yi-1.5-6B-Chat
+# 01-ai/Yi-1.5-9B-Chat-16K
+# 01-ai/Yi-1.5-34B-Chat-16K
+# meta-llama/Llama-3.3-70B-Instruct
+deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 )
 
 # 遍历每个模型并下载
 for model in "${models[@]}"
 do
-   ./hf_guohong.sh $model  --exclude  "*.ckpt" "*.pth" #"consolidated.safetensors" # --token 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 
+   ./hf_guohong.sh $model  --exclude  "*.ckpt" "*.pth" #--token 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 #"consolidated.safetensors" # --token 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 
 done

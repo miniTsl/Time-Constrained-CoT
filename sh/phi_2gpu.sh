@@ -24,7 +24,7 @@ PROMPT_TYPE_LIST=(
 OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
 
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="0,2"
+    export CUDA_VISIBLE_DEVICES="1,2"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     
