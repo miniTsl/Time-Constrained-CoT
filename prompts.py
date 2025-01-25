@@ -201,7 +201,7 @@ CHAT_TEMPLATE_FORMATS = {
     
     "deepseek_format": "<｜begin▁of▁sentence｜>{system_message}\n\nUser: {input}\n\nAssistant:",
     
-    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{user_message}<｜Assistant｜>"
+    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{input}<｜Assistant｜>"
 }
 
 
@@ -773,12 +773,12 @@ PROMPT_TEMPLATES = {
     
     # # ************** DeepSeek-R1-Distill **************
     "deepseek-r1-distill-sbs-hard": (
-        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{user_message}", sbs_hard + "\n\n" + "{user_message}"),
+        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
     "deepseek-r1-distill-sbs": (
-        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{user_message}", sbs + "\n\n" + "{user_message}"),
+        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", sbs + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
