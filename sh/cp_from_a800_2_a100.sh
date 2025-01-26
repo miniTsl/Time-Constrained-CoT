@@ -1,4 +1,4 @@
-# model_list=(
+model_list=(
 #     # "mistralai/Mistral-7B-Instruct-v0.3"
 #     # "mistralai/Ministral-8B-Instruct-2410"
 #     "mistralai/Mistral-Nemo-Instruct-2407"
@@ -42,15 +42,20 @@
 #     # "PowerInfer/SmallThinker-3B-Preview"
 
 #     # "Skywork/Skywork-o1-Open-Llama-3.1-8B"
-# )
+    deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+    deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+    deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+    deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+    deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+)
 
-# for model in "${model_list[@]}"; do
-#     model_name=$(echo "$model" | sed 's/\//--/g')  # Replace slashes with double dashes
-#     local_path="/data03/sunyi/hf_cache/hub/models--${model_name}"
-#     remote_path="sunyi@10.0.0.10:/data/sunyi/hf_cache/hub/"
-#     echo "local_path: $local_path"
-#     echo "remote_path: $remote_path"
-#     rsync -avz --info=progress2 -e "ssh -p 2233" "$local_path" "$remote_path"
-# done
+for model in "${model_list[@]}"; do
+    model_name=$(echo "$model" | sed 's/\//--/g')  # Replace slashes with double dashes
+    local_path="/data03/sunyi/hf_cache/hub/models--${model_name}"
+    remote_path="sunyi@10.0.0.10:/data/sunyi/hf_cache/hub/"
+    echo "local_path: $local_path"
+    echo "remote_path: $remote_path"
+    rsync -avz --info=progress2 -e "ssh -p 2233" "$local_path" "$remote_path"
+done
 
-rsync -avz --info=progress2 -e "ssh -p 2233" /data03/sunyi/time_constrained_cot/outputs/1_10/Qwen sunyi@10.0.0.10:/home/sunyi/Time-Constrained-CoT/outputs/1_10/
+# rsync -avz --info=progress2 -e "ssh -p 2233" /data03/sunyi/time_constrained_cot/outputs/1_10/Qwen sunyi@10.0.0.10:/home/sunyi/Time-Constrained-CoT/outputs/1_10/

@@ -183,7 +183,7 @@ CHAT_TEMPLATE_FORMATS = {
     
     "phi3_format": "<|user|>\n{input}<|end|>\n<|assistant|>\n",
     
-    "phi3mini_format": "<|user|>\n{input}<|end|>\n<|assistant|>\n",
+    "phi3mini_format": "<|system|>\n{system_message}<|end|>\n<|user|>\n{input}<|end|>\n<|assistant|>\n",
     
     "phi3small_format": "<|endoftext|><|system|>\n{system_message}<|end|>\n<|user|>\n{input}<|end|>\n<|assistant|>\n",
     

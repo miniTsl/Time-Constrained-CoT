@@ -12,12 +12,10 @@ from prompts import PROMPT_TEMPLATES
 import torch
 
 
-def gen_budget_list(budget, data_name, model):
-    if budget < 0:
+def gen_budget_list(budget, data_name, model, prompt_type):
+    if budget == -1:
         return [-1]
-    elif budget == 0:
-        return [25]
-    else:
+    elif budget == 1:
         o1_like_models = [
             "Qwen/QwQ-32B-Preview", 
             "Skywork/Skywork-o1-Open-Llama-3.1-8B", 
@@ -29,7 +27,7 @@ def gen_budget_list(budget, data_name, model):
             "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
             "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
         ]
-        if model in o1_like_models:
+        if model in o1_like_models: # maybe should extend to longer sequence
             if data_name == "gsm8k":
                 budget_list = []
                 for i in range(25, 600, 25):
@@ -47,14 +45,17 @@ def gen_budget_list(budget, data_name, model):
                 budget_list = []
                 for i in range(25, 601, 25):
                     budget_list.append(i)
-                # for i in range(600, 1001, 50):
-                #     budget_list.append(i)
             elif data_name in ["math", "math500"]:
                 budget_list = []
                 for i in range(25, 600, 25):
                     budget_list.append(i)
                 for i in range(600, 1201, 50):
                     budget_list.append(i)
+        if "hard" in prompt_type:
+            budget_list.append(4096)
+            if model in o1_like_models:
+                budget_list.append(8192)
+        
         return budget_list
 
 
@@ -69,15 +70,15 @@ def load_data_with_cropped_cot(full_cot_path, args):
     tokenizer.pad_token_id = tokenizer.eos_token_id
     full_cots_tokens = tokenizer(full_cots, return_tensors="pt", padding=True).input_ids
     cot_lengths = (full_cots_tokens != tokenizer.pad_token_id).sum(dim=1)
-    truncate_lengths = torch.minimum(cot_lengths, torch.tensor(args.budget))
+    truncate_lengths = torch.minimum(cot_lengths, torch.tensor(args.output_budget))
     mask = torch.arange(full_cots_tokens.shape[1])[None, :] <= truncate_lengths[:, None]
     # Apply mask to get truncated sequences
     part_cots_tokens = full_cots_tokens.masked_fill(~mask, tokenizer.pad_token_id)
     part_cots = tokenizer.batch_decode(part_cots_tokens, skip_special_tokens=True)
     # if full_cot is less than or equal to budget, consider it as processed
-    processed_samples = [sample for sample in samples if cot_lengths[sample["idx"]] <= args.budget]
+    processed_samples = [sample for sample in samples if cot_lengths[sample["idx"]] <= args.output_budget]
     # Create index mapping for samples that need processing
-    process_indices = [i for i, sample in enumerate(samples) if cot_lengths[sample["idx"]] > args.budget]
+    process_indices = [i for i, sample in enumerate(samples) if cot_lengths[sample["idx"]] > args.output_budget]
     # Filter samples and part_cots using the same indices
     samples = [samples[i] for i in process_indices]
     part_cots = [part_cots[i] for i in process_indices]
@@ -136,7 +137,7 @@ def set_output_path(args, data_name):
     output_dir = os.path.join(args.output_dir, args.model_name_or_path, args.prompt_type)
     out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
     if args.budget > 0 :
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.budget)}.jsonl"
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.output_budget)}.jsonl"
     else:
         out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
     os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)

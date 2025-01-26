@@ -25,7 +25,8 @@ def is_multi_choice(answer):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--budget", type=float, default=-1, help="budget of tokens to use for generation")
+    parser.add_argument("--budget", type=float, default=-1, help="flag to indicate whether to use budget")
+    parser.add_argument("--output_budget", type=float, default=-1, help="budget of tokens to use for generation")
     parser.add_argument("--data_names", default="gsm8k", type=str)
     parser.add_argument("--data_dir", default="./data", type=str)
     parser.add_argument("--model_name_or_path", default="Qwen/QwQ-32B-Preview", type=str)
@@ -91,17 +92,12 @@ def setup(args):
     # infer & eval
     data_list = args.data_names.split(",")
     for data_name in data_list:
-        budget_list = gen_budget_list(args.budget, data_name, args.model_name_or_path)
-        if "hard" in args.prompt_type:
-            # budget_list.append(2048)
-            budget_list.append(4096)
-            # budget_list.append(8192)
-            # budget_list.append(16384)
+        budget_list = gen_budget_list(args.budget, data_name, args.model_name_or_path, args.prompt_type)
         for budget in budget_list:
             print("\n" + "-" * 50)
             print("Budget list:", budget_list)
             print("Current budget:", budget)
-            args.budget = budget
+            args.output_budget = budget
             if budget > 0 and "hard" in args.prompt_type:
                 args.max_tokens_per_call = budget   # hard crop
             elif budget > 0 and "hard" not in args.prompt_type:
@@ -121,7 +117,7 @@ def prepare_data(data_name, args):
     if os.path.exists(out_file):
         return out_file_prefix, output_dir, out_file
     
-    # if using hard crop or original run of soft crop, load samples from original dataset
+    # if original run of soft crop without budget or using hard crop with budget, load samples from original dataset
     if args.budget < 0 or "hard" in args.prompt_type:
         examples = load_data(data_name, args.split, args.data_dir)
         # sample `num_test_sample` from dataset， -1 for full data
@@ -152,7 +148,7 @@ def prepare_data(data_name, args):
         examples = [example for example in examples if example["idx"] not in processed_idxs]
     else:
         # append cropped CoT to samples
-        full_cot_path = out_file.replace("_b" + str(args.budget), "")
+        full_cot_path = out_file.replace("_b" + str(args.output_budget), "")
         examples, processed_samples = load_data_with_cropped_cot(full_cot_path, args)
         
     return examples, processed_samples, out_file
@@ -178,7 +174,7 @@ def main(llm, tokenizer, data_name, args):
     else:
         executor = PythonExecutor(get_answer_from_stdout=True)
     
-    # if using hard crop or original run of soft crop, load samples from existing file
+    # if original run of soft crop without budget or using hard crop with budget, still needs processing
     if args.budget < 0 or "hard" in args.prompt_type:
         samples = []
         print("\nProcessing", len(examples), "examples", "=" * 50)
@@ -418,7 +414,7 @@ def main(llm, tokenizer, data_name, args):
     result_json["time_use_in_minite"] = (
         f"{int(time_use // 60)}:{int(time_use % 60):02d}"
     )
-    result_json["budget"] = args.budget
+    result_json["budget"] = args.output_budget
     inferenced_sample_num = len(all_samples) - len(processed_samples)
     result_json["inferenced_sample_num"] = inferenced_sample_num
     
