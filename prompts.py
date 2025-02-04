@@ -1,82 +1,82 @@
 # o1-mimic doesn't help
 # o1-mimic_hard
-o1_mimic_hard = """For the given math problem, you MUST engage in a thorough, logical, and systematic thought process before responding.
+# o1_mimic_hard = """For the given math problem, you MUST engage in a thorough, logical, and systematic thought process before responding.
 
-CORE THINKING SEQUENCE
+# CORE THINKING SEQUENCE
 
-Initial Engagement
+# Initial Engagement
 
-When you first encounter a math problem, do the following:
-	1.	Rephrase the problem in your own words to ensure you understand it.
-	2.	Identify key concepts and mathematical operations involved.
-	3.	Consider the context and what the problem is asking for.
-	4.	Clarify any unknowns and what information you have available.
-	5.	Spot any potential ambiguities or edge cases that may need further clarification.
+# When you first encounter a math problem, do the following:
+# 	1.	Rephrase the problem in your own words to ensure you understand it.
+# 	2.	Identify key concepts and mathematical operations involved.
+# 	3.	Consider the context and what the problem is asking for.
+# 	4.	Clarify any unknowns and what information you have available.
+# 	5.	Spot any potential ambiguities or edge cases that may need further clarification.
 
-Problem Space Exploration
+# Problem Space Exploration
 
-After understanding the question, explore the problem deeply:
-	1.	Break down the problem into smaller, manageable parts.
-	2.	Identify any constraints or special conditions (e.g., assumptions, domain limitations).
-	3.	Define the goal clearly—what exactly do you need to find or prove?
-	4.	Map out the required steps to solve the problem, considering what’s needed at each stage.
+# After understanding the question, explore the problem deeply:
+# 	1.	Break down the problem into smaller, manageable parts.
+# 	2.	Identify any constraints or special conditions (e.g., assumptions, domain limitations).
+# 	3.	Define the goal clearly—what exactly do you need to find or prove?
+# 	4.	Map out the required steps to solve the problem, considering what’s needed at each stage.
 
-Hypothesis Generation
+# Hypothesis Generation
 
-Before committing to a specific approach:
-	1.	Generate multiple solution paths or methods.
-	2.	Evaluate the merits of each approach based on available data, simplicity, and efficiency.
-	3.	Consider alternative ways to view the problem or potential simplifications.
+# Before committing to a specific approach:
+# 	1.	Generate multiple solution paths or methods.
+# 	2.	Evaluate the merits of each approach based on available data, simplicity, and efficiency.
+# 	3.	Consider alternative ways to view the problem or potential simplifications.
 
-Solution Process
+# Solution Process
 
-Work through the problem methodically:
-	1.	Start from basics and move step by step through each part of the solution.
-	2.	Look for patterns or symmetries that could simplify the work.
-	3.	Question initial assumptions or steps as you go—math problems can often reveal deeper insights as you probe them.
-	4.	Make connections between different parts of the problem, refining your understanding as you progress.
+# Work through the problem methodically:
+# 	1.	Start from basics and move step by step through each part of the solution.
+# 	2.	Look for patterns or symmetries that could simplify the work.
+# 	3.	Question initial assumptions or steps as you go—math problems can often reveal deeper insights as you probe them.
+# 	4.	Make connections between different parts of the problem, refining your understanding as you progress.
 
-Testing and Verification
+# Testing and Verification
 
-As you solve the problem:
-	1.	Double-check your assumptions at every stage.
-	2.	Test intermediate results against known facts or smaller examples.
-	3.	Verify the consistency of your reasoning and computations.
-	4.	Consider special cases or edge conditions that might challenge your conclusions.
+# As you solve the problem:
+# 	1.	Double-check your assumptions at every stage.
+# 	2.	Test intermediate results against known facts or smaller examples.
+# 	3.	Verify the consistency of your reasoning and computations.
+# 	4.	Consider special cases or edge conditions that might challenge your conclusions.
 
-Error Recognition and Correction
+# Error Recognition and Correction
 
-If mistakes arise:
-	1.	Recognize and acknowledge the flaw in reasoning.
-	2.	Analyze why the error occurred and adjust your process accordingly.
-	3.	Correct the logic or calculations and integrate new insights into the solution.
+# If mistakes arise:
+# 	1.	Recognize and acknowledge the flaw in reasoning.
+# 	2.	Analyze why the error occurred and adjust your process accordingly.
+# 	3.	Correct the logic or calculations and integrate new insights into the solution.
 
-Knowledge Synthesis
+# Knowledge Synthesis
 
-Build a coherent solution:
-	1.	Connect different mathematical concepts or facts used throughout the process.
-	2.	Ensure that all relevant aspects of the problem are addressed.
-	3.	Develop a clear and concise response that ties everything together logically.
+# Build a coherent solution:
+# 	1.	Connect different mathematical concepts or facts used throughout the process.
+# 	2.	Ensure that all relevant aspects of the problem are addressed.
+# 	3.	Develop a clear and concise response that ties everything together logically.
 
-Response Preparation
+# Response Preparation
 
-Before finalizing the response:
-	1.	Review all steps taken and ensure every part of the problem is addressed.
-	2.	Provide a clear, step-by-step solution that matches the complexity of the problem.
-	3.	If applicable, explain the reasoning behind each step so the process is transparent.
-	4.	Anticipate possible follow-up questions and address any unclear points preemptively.
+# Before finalizing the response:
+# 	1.	Review all steps taken and ensure every part of the problem is addressed.
+# 	2.	Provide a clear, step-by-step solution that matches the complexity of the problem.
+# 	3.	If applicable, explain the reasoning behind each step so the process is transparent.
+# 	4.	Anticipate possible follow-up questions and address any unclear points preemptively.
 
-Essential Thinking Characteristics
-	•	Authenticity: Your reasoning must feel natural, evolving as you progress through the problem.
-	•	Depth: Your analysis should deepen progressively, starting from basic facts and building toward more complex insights.
-	•	Balance: Maintain the balance between considering edge cases and keeping the solution streamlined.
-	•	Clear Communication: The final answer must be structured, logical, and presented with clear reasoning.
+# Essential Thinking Characteristics
+# 	•	Authenticity: Your reasoning must feel natural, evolving as you progress through the problem.
+# 	•	Depth: Your analysis should deepen progressively, starting from basic facts and building toward more complex insights.
+# 	•	Balance: Maintain the balance between considering edge cases and keeping the solution streamlined.
+# 	•	Clear Communication: The final answer must be structured, logical, and presented with clear reasoning.
 
-Final Output
+# Final Output
 
-Your solution should be clear, detailed, and logically consistent. It should answer the question fully while leaving no step or idea unexplored. 
+# Your solution should be clear, detailed, and logically consistent. It should answer the question fully while leaving no step or idea unexplored. 
 
-Your final answer should be put within \\boxed{{}}."""
+# Your final answer should be put within \\boxed{{}}."""
 # o1_mimic_hard = """You should use chain of thought and reason step by step to fully understand the problem.
 # During your reasoning process:
 # You should recognize and correct your potential mistakes;
@@ -87,7 +87,7 @@ Your final answer should be put within \\boxed{{}}."""
 # Put your final answer within \\boxed{{}}."""
 
 
-
+## direct truncation by setting max new tokens
 # quick hard
 quick_hard = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}}."""
 
@@ -95,7 +95,7 @@ quick_hard = """Give an answer based on intuition or quick calculation. Put your
 direct_hard = """Solve the problem and put your final answer within \\boxed{{}}."""
 
 # Step-by-step hard
-sbs_hard = """Please reason step by step, and put your final answer within \\boxed{{}}."""
+sbs_hard = """Please reason step by step, and always put your final answer within \\boxed{{}}. Where the final answer is just the number or expression that solves the problem."""
 
 # Coarse-to-fine hard
 c2f_hard = """Solve the task by following format:
@@ -130,14 +130,18 @@ Give a revised answer through reasoning step by step to correct potential mistak
 **Final Answer**
 Your final answer within \\boxed{{}}."""
 
+
+# early truncation and using termination tokens
+early_stop = "\n\nNotice: When keyword **Early Stop** appears, you should stop reasoning immediately. Based on your reasoning before **Early Stop**, directly output your final answer within \\boxed{{}}."
+
 # quick
-quick = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}} when done or early-stop keyword **Final Answer** appears."""
+quick = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}} when done or early-stop keyword **Early Stop** appears."""
 
 # direct
 direct = """Solve the problem and put your final answer within \\boxed{{}} when done or early-stop keyword **Final Answer** appears."""
 
 # Step-by-step
-sbs = """Please reason step by step, and put your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears."""
+sbs = sbs_hard + early_stop
 
 # Coarse-to-fine
 c2f = """Solve the task by following format:
@@ -148,7 +152,7 @@ Short analysis and an answer. Focus on efficiency and simplicity.
 Detailed analysis step by step and a refined answer. Focus on accuracy and correctness.
 
 **Final Answer** 
-Your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears."""
+Your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Early Stop** appears."""
 
 # Knowledge First
 kf = """Solve the task by following format:
@@ -201,7 +205,7 @@ CHAT_TEMPLATE_FORMATS = {
     
     "deepseek_format": "<｜begin▁of▁sentence｜>{system_message}\n\nUser: {input}\n\nAssistant:",
     
-    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{input}<｜Assistant｜>"
+    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{input}<｜Assistant｜>"    # Avoid adding a system prompt; all instructions should be contained within the user prompt.
 }
 
 
@@ -267,6 +271,70 @@ PROMPT_TEMPLATES = {
     #     "\n\n",
     # ),
     # ************** Qwen Series **************
+    ## qwen-math
+    "qwen-math-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", quick_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", direct_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-sbs-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", sbs_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", c2f_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-kf-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", kf_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", aav_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    
+    "qwen-math-quick": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", quick + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-direct": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", direct + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-sbs": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", sbs + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-c2f": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", c2f + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-kf": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", kf + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "qwen-math-aav": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", aav + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    
+    ## qwen2.5
     # "qwen-o1-mimic-hard-user": (
     #     CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math problem solver.").replace("{input}", o1_mimic_hard + "\n\n" + "{input}"),
     #     "{output}",
@@ -771,7 +839,8 @@ PROMPT_TEMPLATES = {
         "\n\n", 
     ),
     
-    # # ************** DeepSeek-R1-Distill **************
+    # ************** DeepSeek-R1-Distill **************
+    ## DeepSeek-R1-Distill models output <think> xxx </think> part first
     "deepseek-r1-distill-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
         "{output}",
@@ -782,6 +851,64 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n",
     ),
+    
+    # ************** InternLM Series**************
+    ## internlm2.5
+    "internlm-quick": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-direct": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", direct),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-sbs": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", sbs),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-c2f": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", c2f),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-aav": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", aav),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-kf": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", kf),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-sbs-hard": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "internlm-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", aav_hard),
+        "{output}",
+        "\n\n",
+    )
     # # ************** Skywork **************
     # "skywork-step-by-step": (
     #     "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n" + step_by_step + "<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{input}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
@@ -842,17 +969,5 @@ PROMPT_TEMPLATES = {
     #     "{output}",
     #     "\n\n",
     # ),
-    # # ************** InternLM **************
-    # "internlm-math-fs": ("Question:{input}\nAnswer:", "{output}", "\n"),
-    # "internlm-math-chat": (
-    #     "<|im_start|>user\n{input}<|im_end|>\n" "<|im_start|>assistant\n",
-    #     "{output}",
-    #     "\n\n",
-    # ),
-    # "mistral": (
-    #     "[INST] {input}[/INST]",
-    #     "{output}",
-    #     "\n\n",
-    # ),
-    # "numina": ("### Problem: {input}\n### Solution:", " {output}", "\n\n"),
+    
 }

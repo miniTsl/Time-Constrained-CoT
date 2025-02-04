@@ -15,9 +15,9 @@ models=(
 # PowerInfer/SmallThinker-3B-Preview
 # internlm/internlm2-math-plus-1_8b
 # deepseek-ai/DeepSeek-V2-Lite-Chat
-# internlm/internlm2_5-20b-chat
-# internlm/internlm2_5-7b-chat
-# internlm/internlm2_5-1_8b-chat
+internlm/internlm2_5-20b-chat
+internlm/internlm2_5-7b-chat
+internlm/internlm2_5-1_8b-chat
 # internlm/internlm2-chat-7b
 # internlm/internlm2-chat-20b
 # internlm/internlm2-chat-1_8b
@@ -39,11 +39,11 @@ models=(
 # 01-ai/Yi-1.5-9B-Chat-16K
 # 01-ai/Yi-1.5-34B-Chat-16K
 # meta-llama/Llama-3.3-70B-Instruct
-deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
-deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
-deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
-deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
-deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+# deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+# deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+# deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+# deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+# deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 )
 
 # 遍历每个模型并下载

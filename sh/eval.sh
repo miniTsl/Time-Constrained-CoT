@@ -10,7 +10,7 @@ NUM_TEST_SAMPLE=-1
 
 # English open datasets
 # DATA_NAME="gsm8k,math,svamp,asdiv,mawps,carp_en,tabmwp,minerva_math,gaokao2023en,olympiadbench,college_math"
-DATA_NAME="math500,gsm8k"
+DATA_NAME="gsm8k,math500"
 TOKENIZERS_PARALLELISM=false \
 python3 -u eval.py \
     --model_name_or_path ${MODEL_NAME_OR_PATH} \

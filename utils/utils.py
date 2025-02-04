@@ -55,12 +55,14 @@ def gen_budget_list(budget, data_name, model, prompt_type):
             budget_list.append(4096)
             if model in o1_like_models:
                 budget_list.append(8192)
+                budget_list.append(12288)
+                budget_list.append(16384)
         
         return budget_list
 
 
 def load_data_with_cropped_cot(full_cot_path, args):
-    TERMINATOR="\n\n**Final Answer**\n"
+    TERMINATOR="\n\n**Early Stop**\nPut your final answer within \\boxed{{}}:"
     samples = list(load_jsonl(full_cot_path))
     full_cots = [sample["code"][0] for sample in samples]
     
@@ -110,6 +112,10 @@ def load_data_with_cropped_cot(full_cot_path, args):
         elif args.prompt_type.startswith("deepseek-r1-distill"):
             sample["prompt"] = prompt.replace("<｜Assistant｜>",
                                             "<｜Assistant｜>" + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type.startswith("internlm"):
+            sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
+                                            "<|im_start|>assistant\n" + part_cot)
             sample["prompt"] += TERMINATOR
         # elif args.prompt_type.startswith("skywork"):
         #     sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",

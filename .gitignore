@@ -5,3 +5,12 @@ plot/old/*.png
 *.pyc
 *.pycache*
 latency/*
+
+copied*
+deepseek*
+google*
+internlm*
+microsoft*
+mistral*
+NovaSky*
+Qwen*
