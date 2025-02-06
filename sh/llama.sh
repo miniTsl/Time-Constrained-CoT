@@ -1,35 +1,34 @@
 # 定义模型列表为数组
 MODEL_LIST=(
-    mistralai/Ministral-8B-Instruct-2410
-    # mistralai/Mistral-Nemo-Instruct-2407
-    # mistralai/Mistral-Small-Instruct-2409
-    # mistralai/Mathstral-7B-v0.1
+    # meta-llama/Llama-3.2-3B-Instruct
+    meta-llama/Llama-3.2-1B-Instruct
+    # meta-llama/Llama-3.1-8B-Instruct
 )
-
 
 PROMPT_TYPE_LIST=(
     # "quick"
     # "direct"
     "sbs"
-    "c2f"
+    # "c2f"
     # "aav"
     # "kf"
+    # "o1-mimic-hard-user"
     "sbs-hard"
     # "direct-hard"
     # "quick-hard"
-    "c2f-hard"
+    # "c2f-hard"
     # "aav-hard"
 )
 
-PROMPT_PREFIX="mistral"
-OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/2_6
+OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/2_4
+
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="2,3,5,6"
+    export CUDA_VISIBLE_DEVICES="6,7"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
-    
+    PROMPT_PREFIX="llama"
 
     for PROMPT_TYPE in "${PROMPT_TYPE_LIST[@]}"; do
         # hard

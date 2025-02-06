@@ -1,5 +1,7 @@
 set -ex
 
+export HF_HUB_OFFLINE=1
+
 PROMPT_TYPE=$1
 MODEL_NAME_OR_PATH=$2
 BUDGET=$3

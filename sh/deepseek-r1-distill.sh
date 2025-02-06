@@ -4,7 +4,7 @@ MODEL_LIST=(
     deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
     deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
     deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
-    deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+    # deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 
 )
 
@@ -24,12 +24,12 @@ PROMPT_TYPE_LIST=(
 )
 
 PROMPT_PREFIX="deepseek-r1-distill"
-OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/1_10
+OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/2_4
 
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="1,2"
+    export CUDA_VISIBLE_DEVICES="2,3"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     

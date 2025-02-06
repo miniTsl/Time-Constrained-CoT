@@ -499,7 +499,7 @@ def extract_theoremqa_answer(pred: str, answer_flag: bool = True):
     return pred
 
 
-def extract_answer(pred_str, data_name, use_last_number=False):
+def extract_answer(pred_str, data_name, use_last_number=True):
     pred_str = pred_str.replace("\u043a\u0438", "")
     if data_name in ["mmlu_stem", "sat_math", "aqua", "gaokao2023"]:
         # TODO check multiple choice
@@ -534,6 +534,10 @@ def extract_answer(pred_str, data_name, use_last_number=False):
         pred = pred_str.split("the answer is")[-1].strip()
     elif "final answer is" in pred_str:
         pred = pred_str.split("final answer is")[-1].strip()
+    elif "The answer is" in pred_str:
+        pred = pred_str.split("The answer is")[-1].strip()
+    elif "Final answer is" in pred_str:
+        pred = pred_str.split("Final answer is")[-1].strip()
     elif "答案是" in pred_str:
         # Handle Chinese few-shot multiple choice problem answer extraction
         pred = pred_str.split("答案是")[1].strip().split("\n\n")[0].strip()
@@ -578,7 +582,7 @@ STRIP_EXCEPTIONS = ["carp_en", "minerva_math"]
 
 def parse_ground_truth(example: Dict[str, Any], data_name):
     if "gt_cot" in example and "gt" in example:
-        if data_name in ["math", "math500"]:
+        if data_name in ["math", "math500"]:    # TODO:for math and math500, why not use example["answer"]?
             gt_ans = extract_answer(example["gt_cot"], data_name)
         elif data_name in STRIP_EXCEPTIONS:
             gt_ans = example["gt"]
@@ -587,7 +591,7 @@ def parse_ground_truth(example: Dict[str, Any], data_name):
         return example["gt_cot"], gt_ans
 
     # parse ground truth
-    if data_name in ["math", "math500", "minerva_math"]:    # TODO:for math and math500, why not use example["answer"]?
+    if data_name in ["math", "math500", "minerva_math"]:   
         gt_cot = example["solution"]
         gt_ans = extract_answer(gt_cot, data_name)
     elif data_name == "gsm8k":

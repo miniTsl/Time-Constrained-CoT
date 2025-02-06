@@ -4,7 +4,7 @@
 set timeout -1
 
 # Start the original script
-spawn bash sh/tmp1.sh
+spawn bash sh/phi_4gpu.sh
 
 # Automatically input 'y' when prompted
 expect {

@@ -96,7 +96,7 @@ def setup(args):
         budget_list = gen_budget_list(args.budget, data_name, args.model_name_or_path, args.prompt_type)
         for budget in budget_list:
             print("\n" + "-" * 50)
-            print("Budget list:", budget_list)
+            print("Budget list:", budget_list, " Budget length:", len(budget_list))
             print("Current budget:", budget)
             args.output_budget = budget
             if budget > 0 and "hard" in args.prompt_type:

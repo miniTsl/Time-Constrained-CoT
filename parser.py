@@ -532,6 +532,8 @@ def extract_answer(pred_str, data_name, use_last_number=False):
         pred = a
     elif "the answer is" in pred_str:
         pred = pred_str.split("the answer is")[-1].strip()
+    elif "Therefore," in pred_str:
+        pred = pred_str.split("Therefore,")[-1].strip()
     elif "The answer is:" in pred_str:
         content = pred_str.split("The answer is:")[-1].strip()
         pattern = r"-?\d*\.?\d+"
@@ -655,7 +657,7 @@ STRIP_EXCEPTIONS = ["carp_en", "minerva_math"]
 
 def parse_ground_truth(example: Dict[str, Any], data_name):
     if "gt_cot" in example and "gt" in example:
-        if data_name in ["math", "math500"]:
+        if data_name in ["math", "math500"]:    # TODO:for math and math500, why not use example["answer"]?
             gt_ans = extract_answer(example["gt_cot"], data_name)
         elif data_name in STRIP_EXCEPTIONS:
             gt_ans = example["gt"]
@@ -664,7 +666,7 @@ def parse_ground_truth(example: Dict[str, Any], data_name):
         return example["gt_cot"], gt_ans
 
     # parse ground truth
-    if data_name in ["math", "math500", "minerva_math"]:    # TODO:for math and math500, why not use example["answer"]?
+    if data_name in ["math", "math500", "minerva_math"]:    
         gt_cot = example["solution"]
         gt_ans = extract_answer(gt_cot, data_name)
     elif data_name == "gsm8k":

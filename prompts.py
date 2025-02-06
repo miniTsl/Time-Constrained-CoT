@@ -95,18 +95,22 @@ quick_hard = """Give an answer based on intuition or quick calculation. Put your
 direct_hard = """Solve the problem and put your final answer within \\boxed{{}}."""
 
 # Step-by-step hard
-sbs_hard = """Please reason step by step, and always put your final answer within \\boxed{{}}. Where the final answer is just the number or expression that solves the problem."""
+sbs_hard = """Please reason step by step. 
+Conclude with: 
+Therefore, the final answer is: \\boxed{{[answer]}}.
+Where [answer] is just the final number or expression that solves the problem."""
 
 # Coarse-to-fine hard
-c2f_hard = """Solve the task by following format:
-**Coarse Reasoning**
-Short analysis and an answer. Focus on efficiency and simplicity.
+c2f_hard = """Use the following pattern to solve the problem:
+**Coarse-Grained Reasoning**
+Provide a brief analysis and initial answer, focusing on efficiency and conciseness.
 
-**Fine Reasoning**
-Detailed analysis step by step and a refined answer. Focus on accuracy and correctness.
+**Fine-Grained Reasoning**
+Provide detailed reasoning step by step and a refined answer, focusing on correctness and rigor.
 
-**Final Answer**
-Your final answer within \\boxed{{}}."""
+Conclude with: 
+Therefore, the final answer is: \\boxed{{[answer]}}.
+Where [answer] is just the final number or expression that solves the problem."""
 
 # Knowledge First hard
 kf_hard = """Solve the task by following format:
@@ -132,7 +136,10 @@ Your final answer within \\boxed{{}}."""
 
 
 # early truncation and using termination tokens
-early_stop = "\n\nNotice: When keyword **Early Stop** appears, you should stop reasoning immediately. Based on your reasoning before **Early Stop**, directly output your final answer within \\boxed{{}}."
+early_stop = """\n\nNotice: When you are interupted by the keyword **Time’s Up!**, stop reasoning immediately.
+Based on your reasoning so far, conclude with: 
+Therefore, the final answer is: \\boxed{{[answer]}}.
+Where [answer] is just the final number or expression that solves the problem."""
 
 # quick
 quick = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}} when done or early-stop keyword **Early Stop** appears."""
@@ -144,15 +151,7 @@ direct = """Solve the problem and put your final answer within \\boxed{{}} when 
 sbs = sbs_hard + early_stop
 
 # Coarse-to-fine
-c2f = """Solve the task by following format:
-**Coarse Reasoning**
-Short analysis and an answer. Focus on efficiency and simplicity.
-
-**Fine Reasoning**
-Detailed analysis step by step and a refined answer. Focus on accuracy and correctness.
-
-**Final Answer** 
-Your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Early Stop** appears."""
+c2f = c2f_hard + early_stop
 
 # Knowledge First
 kf = """Solve the task by following format:
@@ -405,6 +404,7 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n", 
     ),
+    
     # ************** Mistral Series **************
     "mistral-quick-hard": (
         CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", quick_hard),
@@ -466,6 +466,7 @@ PROMPT_TEMPLATES = {
         "{output}",
         "\n\n", 
     ),
+    
     # ************** Phi Series **************
     ## phi3
     "phi3-quick-hard": (
@@ -837,6 +838,63 @@ PROMPT_TEMPLATES = {
         CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", aav + "\n\n" + "{input}"),
         "{output}",
         "\n\n", 
+    ),
+    
+    # ************** Llama Series **************
+    "llama-quick": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", quick),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-direct": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", direct),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-sbs": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", sbs),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-c2f": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", c2f),
+        "{output}",
+        "\n\n", 
+    ),
+    "llama-aav": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", aav),
+        "{output}",
+        "\n\n", 
+    ),
+    "llama-kf": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", kf),
+        "{output}",
+        "\n\n", 
+    ),
+    "llama-sbs-hard": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", sbs_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-direct-hard": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", direct_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-quick-hard": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", quick_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-c2f-hard": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", c2f_hard),
+        "{output}",
+        "\n\n",
+    ),
+    "llama-aav-hard": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", aav_hard),
+        "{output}",
+        "\n\n",
     ),
     
     # ************** DeepSeek-R1-Distill **************

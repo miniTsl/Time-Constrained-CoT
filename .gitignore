@@ -7,10 +7,4 @@ plot/old/*.png
 latency/*
 
 copied*
-deepseek*
-google*
-internlm*
-microsoft*
-mistral*
-NovaSky*
-Qwen*
+score_data/

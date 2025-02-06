@@ -30,39 +30,43 @@ def gen_budget_list(budget, data_name, model, prompt_type):
         if model in o1_like_models: # maybe should extend to longer sequence
             if data_name == "gsm8k":
                 budget_list = []
-                for i in range(25, 600, 25):
+                for i in range(25, 300, 25):
                     budget_list.append(i)
-                for i in range(600, 1201, 50):
+                for i in range(300, 600, 50):
+                    budget_list.append(i)
+                for i in range(600, 1201, 100):
                     budget_list.append(i)
             elif data_name in ["math", "math500"]:
                 budget_list = []
                 for i in range(25, 600, 25):
                     budget_list.append(i)
-                for i in range(600, 2401, 50):
+                for i in range(600, 2401, 100):
                     budget_list.append(i)
         else:    
             if data_name == "gsm8k":
                 budget_list = []
-                for i in range(25, 601, 25):
+                for i in range(25, 300, 25):
+                    budget_list.append(i)
+                for i in range(300, 601, 50):
                     budget_list.append(i)
             elif data_name in ["math", "math500"]:
                 budget_list = []
-                for i in range(25, 600, 25):
+                for i in range(25, 300, 25):
                     budget_list.append(i)
-                for i in range(600, 1201, 50):
+                for i in range(300, 600, 50):
+                    budget_list.append(i)
+                for i in range(600, 1201, 100):
                     budget_list.append(i)
         if "hard" in prompt_type:
             budget_list.append(4096)
             if model in o1_like_models:
                 budget_list.append(8192)
-                budget_list.append(12288)
-                budget_list.append(16384)
         
         return budget_list
 
 
 def load_data_with_cropped_cot(full_cot_path, args):
-    TERMINATOR="\n\n**Early Stop**\nPut your final answer within \\boxed{{}}:"
+    TERMINATOR="""\n\n**Time's Up!**\nTherefore, the final answer is:"""
     samples = list(load_jsonl(full_cot_path))
     full_cots = [sample["code"][0] for sample in samples]
     
@@ -116,6 +120,10 @@ def load_data_with_cropped_cot(full_cot_path, args):
         elif args.prompt_type.startswith("internlm"):
             sample["prompt"] = prompt.replace("<|im_start|>assistant\n",
                                             "<|im_start|>assistant\n" + part_cot)
+            sample["prompt"] += TERMINATOR
+        elif args.prompt_type.startswith("llama"):
+            sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",
+                                            "assistant<|end_header_id|>\n\n" + part_cot)
             sample["prompt"] += TERMINATOR
         # elif args.prompt_type.startswith("skywork"):
         #     sample["prompt"] = prompt.replace("assistant<|end_header_id|>\n\n",
