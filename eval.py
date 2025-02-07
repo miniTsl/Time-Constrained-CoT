@@ -68,7 +68,9 @@ def setup(args):
                 pipeline_parallel_size=args.pipeline_parallel_size,
                 trust_remote_code=True,
                 gpu_memory_utilization=0.85,
-                enable_chunked_prefill=False
+                enable_chunked_prefill=False,
+                max_model_len = 10240 if "gemma" not in args.model_name_or_path and "Qwen2.5-Math" not in args.model_name_or_path else None,
+                max_num_seqs = 512
             )
         else:
             llm = LLM(
@@ -77,6 +79,8 @@ def setup(args):
                 pipeline_parallel_size=args.pipeline_parallel_size,
                 trust_remote_code=True,
                 gpu_memory_utilization=0.85,
+                max_model_len = 10240 if "gemma" not in args.model_name_or_path and "Qwen2.5-Math" not in args.model_name_or_path else None,
+                max_num_seqs = 512
             )
         tokenizer = None
         if args.apply_chat_template:
