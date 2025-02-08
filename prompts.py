@@ -124,15 +124,16 @@ Step by step analysis using above knowledge.
 Your final answer within \\boxed{{}}."""
 
 # Answer and Verify hard
-aav_hard = """Solve the task by following format:
+aav_hard = """Use the following pattern to solve the problem:
 **Quick Answer**
-Give an initial answer based on intuition or quick calculation.
+Provide an initial answer based on intuition or quick calculation.
 
 **Verification**
-Give a revised answer through reasoning step by step to correct potential mistakes.
+Provide a revised answer through reasoning step by step. Correct previous mistakes, if any.
 
-**Final Answer**
-Your final answer within \\boxed{{}}."""
+Conclude with: 
+Therefore, the final answer is: \\boxed{{[answer]}}.
+Where [answer] is just the final number or expression that solves the problem."""
 
 
 # early truncation and using termination tokens
@@ -166,16 +167,7 @@ Your final answer within \\boxed{{}} when done reasoning or early-stop keyword *
 
 
 # Answer and Verify
-aav = """Solve the task by following format:
-**Quick Answer**
-Give an initial answer based on intuition or quick calculation.
-
-**Verification**
-Give a revised answer through reasoning step by step to correct potential mistakes.
-
-**Final Answer**
-Your final answer within \\boxed{{}} when done reasoning or early-stop keyword **Final Answer** appears.
-"""
+aav = aav_hard + early_stop
 
 
 # First define all unique chat templates
@@ -272,63 +264,63 @@ PROMPT_TEMPLATES = {
     # ************** Qwen Series **************
     ## qwen-math
     "qwen-math-quick-hard": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", quick_hard + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick_hard),
         "{output}",
         "\n\n",
     ),
     "qwen-math-direct-hard": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", direct_hard + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", direct_hard),
         "{output}",
         "\n\n",
     ),
     "qwen-math-sbs-hard": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", sbs_hard + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", sbs_hard),
         "{output}",
         "\n\n",
     ),
     "qwen-math-c2f-hard": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", c2f_hard + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", c2f_hard),
         "{output}",
         "\n\n",
     ),
     "qwen-math-kf-hard": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", kf_hard + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", kf_hard),
         "{output}",
         "\n\n",
     ),
     "qwen-math-aav-hard": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", aav_hard + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", aav_hard),
         "{output}",
         "\n\n",
     ),
     
     "qwen-math-quick": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", quick + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick),
         "{output}",
         "\n\n",
     ),
     "qwen-math-direct": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", direct + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", direct),
         "{output}",
         "\n\n",
     ),
     "qwen-math-sbs": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", sbs + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", sbs),
         "{output}",
         "\n\n",
     ),
     "qwen-math-c2f": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", c2f + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", c2f),
         "{output}",
         "\n\n",
     ),
     "qwen-math-kf": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", kf + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", kf),
         "{output}",
         "\n\n",
     ),
     "qwen-math-aav": (
-        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", "You are a math expert.").replace("{input}", aav + "\n\n" + "{input}"),
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", aav),
         "{output}",
         "\n\n",
     ),
@@ -906,6 +898,16 @@ PROMPT_TEMPLATES = {
     ),
     "deepseek-r1-distill-sbs": (
         CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", sbs + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "deepseek-r1-distill-c2f": (
+        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", c2f + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
+    "deepseek-r1-distill-aav": (
+        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", aav + "\n\n" + "{input}"),
         "{output}",
         "\n\n",
     ),
