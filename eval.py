@@ -264,6 +264,9 @@ def main(llm, tokenizer, data_name, args):
     elif "pure" in args.prompt_type:
         stop_words.append("\n\n\n")
 
+    if "mini" in args.model_name_or_path:
+        stop_words.append("Question")
+    
     # start inference
     # measure time use
     start_time = time.time()
