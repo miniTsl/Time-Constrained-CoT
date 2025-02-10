@@ -9,7 +9,7 @@ from matplotlib import rcParams
 from scipy import interpolate
 # from utils.model_list import __MODEL_LIST__
 
-"""model_list = [
+model_list = [
     "Qwen/QwQ-32B-Preview",
     # "Skywork/Skywork-o1-Open-Llama-3.1-8B", 
     # "PowerInfer/SmallThinker-3B-Preview",
@@ -41,16 +41,16 @@ from scipy import interpolate
     "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama/Llama-3.2-3B-Instruct",
     "meta-llama/Llama-3.2-1B-Instruct",
-]"""
-
-model_list = [
-    "Qwen/QwQ-32B-Preview",
-    "NovaSky-AI/Sky-T1-32B-Preview",
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-    "google/gemma-2-27b-it",
-    "google/gemma-2-9b-it",
 ]
+
+# model_list = [
+#     "Qwen/QwQ-32B-Preview",
+#     "NovaSky-AI/Sky-T1-32B-Preview",
+#     "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+#     "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+#     "google/gemma-2-27b-it",
+#     "google/gemma-2-9b-it",
+# ]
 
 def measure_inference_latency(model, tokenizer, tokenized_ids, target_output_tokens, num_runs=3):
     # Prepare input
@@ -80,6 +80,7 @@ def measure_inference_latency(model, tokenizer, tokenized_ids, target_output_tok
             # decode and print the output
             output_text = tokenizer.decode(output_ids, skip_special_tokens=True)
             print("output_text: ", output_text)
+            print()
             if actual_output_length == target_output_tokens:
                 latencies.append((end_time - start_time) / 1_000_000_000)  # Convert to seconds
                 break
@@ -136,7 +137,7 @@ def main(checkpoint, device):
     )
 
     # Define input token lengths and output token lengths to test
-    input_tokens = [128]
+    input_tokens = [64, 128, 256]
     output_tokens = [64,128,256,512,1024]
 
     base_text = "Write a long story about a cat for 5k words."
@@ -186,6 +187,7 @@ def main(checkpoint, device):
         print(f"Testing input length: {input_len} tokens")
         
         for output_len in output_tokens:
+            print()
             print(f"Output length: {output_len} tokens")
             latency = measure_inference_latency(
                 model,
@@ -204,28 +206,29 @@ def main(checkpoint, device):
     )
     
     # Save results
-    df.to_csv("./0209/" + checkpoint.split("/")[-1] + "_" + device + ".csv")
-    print("\nResults saved to ./0209/" + checkpoint.split("/")[-1] + "_" + device + ".csv")
+    df.to_csv("./0210/" + checkpoint.split("/")[-1] + "_" + device + ".csv")
+    print("\nResults saved to ./0210/" + checkpoint.split("/")[-1] + "_" + device + ".csv")
     print(df)
+    print()
     
-    plt.figure(figsize=(8, 6))
+    # plt.figure(figsize=(8, 6))
 
-    for row in df.index:
-        x = np.array([int(t.split()[0]) for t in df.columns])
-        y = df.loc[row].values
-        f = interpolate.interp1d(x, y, kind='cubic')
-        xnew = np.linspace(x.min(), x.max(), 100)
-        ynew = f(xnew)
-        plt.plot(xnew, ynew, label=row)
+    # for row in df.index:
+    #     x = np.array([int(t.split()[0]) for t in df.columns])
+    #     y = df.loc[row].values
+    #     f = interpolate.interp1d(x, y, kind='cubic')
+    #     xnew = np.linspace(x.min(), x.max(), 100)
+    #     ynew = f(xnew)
+    #     plt.plot(xnew, ynew, label=row)
 
-    plt.xlabel('output_tokens')
-    plt.ylabel('time')
-    plt.title('latency_mapping')
-    plt.legend(title="input_tokens")
-    plt.grid(True)
+    # plt.xlabel('output_tokens')
+    # plt.ylabel('time')
+    # plt.title('latency_mapping')
+    # plt.legend(title="input_tokens")
+    # plt.grid(True)
 
-    model_name_split = model_name.split("/", 1)[1]  # 分割字符串，去掉前半部分
-    plt.savefig("./0209/" + model_name_split + "_output_plot_special.png")
+    # model_name_split = model_name.split("/", 1)[1]  # 分割字符串，去掉前半部分
+    # plt.savefig("./0209/" + model_name_split + "_output_plot_special.png")
     
     del model, tokenizer
     torch.cuda.empty_cache()

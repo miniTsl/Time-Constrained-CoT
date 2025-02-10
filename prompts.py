@@ -87,6 +87,15 @@
 # Put your final answer within \\boxed{{}}."""
 
 
+## append output token limit onto prompts
+sbs_budget_hard = """Please reason step by step. 
+Conclude with: 
+Therefore, the final answer is: \\boxed{{[answer]}}.
+Where [answer] is just the final number or expression that solves the problem.
+
+Make sure your response uses less than {token_budget} tokens.
+"""
+
 ## direct truncation by setting max new tokens
 # quick hard
 quick_hard = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}}."""
@@ -137,7 +146,7 @@ Where [answer] is just the final number or expression that solves the problem.""
 
 
 # early truncation and using termination tokens
-early_stop = """\n\nNotice: When you are interupted by the keyword **Time’s Up!**, stop reasoning immediately.
+early_stop = """\n\nNotice: When you are interrupted by the keyword **Time’s Up!**, stop reasoning immediately.
 Based on your reasoning so far, conclude with: 
 Therefore, the final answer is: \\boxed{{[answer]}}.
 Where [answer] is just the final number or expression that solves the problem."""
@@ -263,6 +272,11 @@ PROMPT_TEMPLATES = {
     # ),
     # ************** Qwen Series **************
     ## qwen-math
+    "qwen-math-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "qwen-math-quick-hard": (
         CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick_hard),
         "{output}",
@@ -336,6 +350,11 @@ PROMPT_TEMPLATES = {
     #     "{output}",
     #     "\n\n",
     # ),
+    "qwen-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "qwen-quick-hard": (
         CHAT_TEMPLATE_FORMATS["qwen_format"].replace("{system_message}", quick_hard),
         "{output}",
@@ -398,6 +417,11 @@ PROMPT_TEMPLATES = {
     ),
     
     # ************** Mistral Series **************
+    "mistral-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "mistral-quick-hard": (
         CHAT_TEMPLATE_FORMATS["mistral_format"].replace("{system_message}", quick_hard),
         "{output}",
@@ -461,6 +485,11 @@ PROMPT_TEMPLATES = {
     
     # ************** Phi Series **************
     ## phi3
+    "phi3-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3_format"].replace("{input}", sbs_budget_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
     "phi3-quick-hard": (
         CHAT_TEMPLATE_FORMATS["phi3_format"].replace("{input}", quick_hard + "\n\n" + "{input}"),
         "{output}",
@@ -523,6 +552,11 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi3mini
+    "phi3mini-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi3mini-quick-hard": (
         CHAT_TEMPLATE_FORMATS["phi3mini_format"].replace("{system_message}", quick_hard),
         "{output}",
@@ -585,6 +619,11 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi3small
+    "phi3small-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi3small-quick-hard": (
         CHAT_TEMPLATE_FORMATS["phi3small_format"].replace("{system_message}", quick_hard),
         "{output}",
@@ -647,6 +686,11 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi3medium
+    "phi3medium-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", sbs_budget_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
     "phi3medium-quick-hard": (
         CHAT_TEMPLATE_FORMATS["phi3medium_format"].replace("{input}", quick_hard + "\n\n" + "{input}"),
         "{output}",
@@ -709,6 +753,11 @@ PROMPT_TEMPLATES = {
     ),
     
     ## phi4
+    "phi4-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "phi4-quick-hard": (
         CHAT_TEMPLATE_FORMATS["phi4_format"].replace("{system_message}", quick_hard),
         "{output}",
@@ -771,6 +820,11 @@ PROMPT_TEMPLATES = {
     ),
     
     # ************** Gemma Series **************
+    "gemma-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", sbs_budget_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
     "gemma-quick-hard": (
         CHAT_TEMPLATE_FORMATS["gemma_format"].replace("{input}", quick_hard + "\n\n" + "{input}"),
         "{output}",
@@ -833,6 +887,11 @@ PROMPT_TEMPLATES = {
     ),
     
     # ************** Llama Series **************
+    "llama-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "llama-quick": (
         CHAT_TEMPLATE_FORMATS["llama_format"].replace("{system_message}", quick),
         "{output}",
@@ -891,6 +950,11 @@ PROMPT_TEMPLATES = {
     
     # ************** DeepSeek-R1-Distill **************
     ## DeepSeek-R1-Distill models output <think> xxx </think> part first
+    "deepseek-r1-distill-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", sbs_budget_hard + "\n\n" + "{input}"),
+        "{output}",
+        "\n\n",
+    ),
     "deepseek-r1-distill-sbs-hard": (
         CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"].replace("{input}", sbs_hard + "\n\n" + "{input}"),
         "{output}",
@@ -914,6 +978,11 @@ PROMPT_TEMPLATES = {
     
     # ************** InternLM Series**************
     ## internlm2.5
+    "internlm-sbs-budget-hard": (
+        CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", sbs_budget_hard),
+        "{output}",
+        "\n\n",
+    ),
     "internlm-quick": (
         CHAT_TEMPLATE_FORMATS["internlm_format"].replace("{system_message}", quick),
         "{output}",

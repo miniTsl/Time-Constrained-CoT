@@ -4,7 +4,8 @@ plot/*.png
 plot/old/*.png
 *.pyc
 *.pycache*
-latency/*
+latency/*/
 
 copied*
 score_data/
+eval_*
