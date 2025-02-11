@@ -150,8 +150,8 @@ def set_output_path(args, data_name):
     # args.output_dir defines experiment path,such as outputs/12_25
     output_dir = os.path.join(args.output_dir, args.model_name_or_path, args.prompt_type)
     out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
-    if args.budget > 0 :
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.output_budget)}.jsonl"
+    if 1:
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.output_budget)}_original.jsonl"
     else:
         out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
     os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)
