@@ -259,7 +259,7 @@ def construct_prompt(example, data_name, args):
                 for q, a in demos
             ]
         )
-    context = input_template.format(input=example["question"], token_budget=args.output_budget)
+    context = input_template.format(input=example["question"], token_budget=args.output_budget+25)
     if len(demo_prompt) == 0 or (
         args.adapt_few_shot and example["gt_ans"] not in ["A", "B", "C", "D", "E"]
     ):
