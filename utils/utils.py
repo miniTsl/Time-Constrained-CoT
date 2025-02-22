@@ -34,13 +34,13 @@ def gen_budget_list(budget, data_name, model, prompt_type):
                     budget_list.append(i)
                 for i in range(300, 600, 50):
                     budget_list.append(i)
-                for i in range(600, 1201, 100):
+                for i in range(600, 1501, 100):
                     budget_list.append(i)
             elif data_name in ["math", "math500"]:
                 budget_list = []
                 for i in range(25, 600, 25):
                     budget_list.append(i)
-                for i in range(600, 2401, 100):
+                for i in range(600, 3601, 100):
                     budget_list.append(i)
         else:    
             if data_name == "gsm8k":
@@ -61,6 +61,8 @@ def gen_budget_list(budget, data_name, model, prompt_type):
             budget_list.append(4096)
             if model in o1_like_models:
                 budget_list.append(8192)
+                budget_list.append(10240)
+                budget_list.append(16384)
         
         return budget_list
 
@@ -150,8 +152,8 @@ def set_output_path(args, data_name):
     # args.output_dir defines experiment path,such as outputs/12_25
     output_dir = os.path.join(args.output_dir, args.model_name_or_path, args.prompt_type)
     out_file_prefix = f"{args.split}_{args.prompt_type}_{args.num_test_sample}_seed{args.seed}_t{args.temperature}"
-    if 1:
-        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.output_budget)}_original.jsonl"
+    if args.budget > 0 :
+        out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}_b{int(args.output_budget)}.jsonl"
     else:
         out_file = f"{output_dir}/{data_name}/{out_file_prefix}_s{args.start}_e{args.end}.jsonl"
     os.makedirs(f"{output_dir}/{data_name}", exist_ok=True)
@@ -259,7 +261,7 @@ def construct_prompt(example, data_name, args):
                 for q, a in demos
             ]
         )
-    context = input_template.format(input=example["question"], token_budget=args.output_budget+25)
+    context = input_template.format(input=example["question"])
     if len(demo_prompt) == 0 or (
         args.adapt_few_shot and example["gt_ans"] not in ["A", "B", "C", "D", "E"]
     ):

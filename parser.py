@@ -499,7 +499,7 @@ def extract_theoremqa_answer(pred: str, answer_flag: bool = True):
     return pred
 
 
-def extract_answer(pred_str, data_name, use_last_number=False):
+def extract_answer(pred_str, data_name, use_last_number=True):
     pred_str = pred_str.replace("\u043a\u0438", "")
     if data_name in ["mmlu_stem", "sat_math", "aqua", "gaokao2023"]:
         # TODO check multiple choice
@@ -530,92 +530,92 @@ def extract_answer(pred_str, data_name, use_last_number=False):
         else:   # handle simple format using $$
             a = ans.split("$")[0].strip()
         pred = a
-    elif "the answer is" in pred_str:
-        pred = pred_str.split("the answer is")[-1].strip()
-    elif "Therefore," in pred_str:
-        pred = pred_str.split("Therefore,")[-1].strip()
-    elif "The answer is:" in pred_str:
-        content = pred_str.split("The answer is:")[-1].strip()
-        pattern = r"-?\d*\.?\d+"
-        numbers = re.findall(pattern, content)
-        pred = numbers[0] if numbers else ""
-        return pred
-    elif "final answer is" in pred_str:
-        pred = pred_str.split("final answer is")[-1].strip()
-    elif "答案是" in pred_str:
-        # Handle Chinese few-shot multiple choice problem answer extraction
-        pred = pred_str.split("答案是")[1].strip().split("\n\n")[0].strip()
-    elif "Final Answer:$" in pred_str and "$" in pred_str:
-        content = pred_str.split("The answer is:")[-1].strip()
-        first_dollar = content.find('$')
-        last_dollar = content.rfind('$')
-        if first_dollar != -1 and last_dollar != -1:
-            pred = content[first_dollar:last_dollar].strip()
-    elif "Final Answer:(" in pred_str and "(" in pred_str:
-        parts = pred_str.split("Final Answer:")[-1].strip()  # Get content after "Final Answer:"
-        # Try parentheses first
-        match = re.search(r"\((.*?)\)", parts)
-        if match:
-            pred = match.group(1).strip()
-        else:
-            # Fallback to first number pattern 
-            pattern = r"-?\d*\.?\d+"
-            numbers = re.findall(pattern, parts)
-            pred = numbers[0] if numbers else ""
-    elif "The answer is:$" in pred_str and "$" in pred_str:
-        content = pred_str.split("The answer is:")[-1].strip()
-        first_dollar = content.find('$')
-        last_dollar = content.rfind('$')
-        if first_dollar != -1 and last_dollar != -1:
-            pred = content[first_dollar:last_dollar].strip()
-    elif "The answer is:(" in pred_str and "(" in pred_str:
-        parts = pred_str.split("The answer is:")[-1].strip()  # Get content after "Final Answer:"
-        # Try parentheses first
-        match = re.search(r"\((.*?)\)", parts)
-        if match:
-            pred = match.group(1).strip()
-        else:
-            # Fallback to first number pattern 
-            pattern = r"-?\d*\.?\d+"
-            numbers = re.findall(pattern, parts)
-            pred = numbers[0] if numbers else ""
+    # elif "the answer is" in pred_str:
+    #     pred = pred_str.split("the answer is")[-1].strip()
+    # elif "Therefore," in pred_str:
+    #     pred = pred_str.split("Therefore,")[-1].strip()
+    # elif "The answer is:" in pred_str:
+    #     content = pred_str.split("The answer is:")[-1].strip()
+    #     pattern = r"-?\d*\.?\d+"
+    #     numbers = re.findall(pattern, content)
+    #     pred = numbers[0] if numbers else ""
+    #     return pred
+    # elif "final answer is" in pred_str:
+    #     pred = pred_str.split("final answer is")[-1].strip()
+    # elif "答案是" in pred_str:
+    #     # Handle Chinese few-shot multiple choice problem answer extraction
+    #     pred = pred_str.split("答案是")[1].strip().split("\n\n")[0].strip()
+    # elif "Final Answer:$" in pred_str and "$" in pred_str:
+    #     content = pred_str.split("The answer is:")[-1].strip()
+    #     first_dollar = content.find('$')
+    #     last_dollar = content.rfind('$')
+    #     if first_dollar != -1 and last_dollar != -1:
+    #         pred = content[first_dollar:last_dollar].strip()
+    # elif "Final Answer:(" in pred_str and "(" in pred_str:
+    #     parts = pred_str.split("Final Answer:")[-1].strip()  # Get content after "Final Answer:"
+    #     # Try parentheses first
+    #     match = re.search(r"\((.*?)\)", parts)
+    #     if match:
+    #         pred = match.group(1).strip()
+    #     else:
+    #         # Fallback to first number pattern 
+    #         pattern = r"-?\d*\.?\d+"
+    #         numbers = re.findall(pattern, parts)
+    #         pred = numbers[0] if numbers else ""
+    # elif "The answer is:$" in pred_str and "$" in pred_str:
+    #     content = pred_str.split("The answer is:")[-1].strip()
+    #     first_dollar = content.find('$')
+    #     last_dollar = content.rfind('$')
+    #     if first_dollar != -1 and last_dollar != -1:
+    #         pred = content[first_dollar:last_dollar].strip()
+    # elif "The answer is:(" in pred_str and "(" in pred_str:
+    #     parts = pred_str.split("The answer is:")[-1].strip()  # Get content after "Final Answer:"
+    #     # Try parentheses first
+    #     match = re.search(r"\((.*?)\)", parts)
+    #     if match:
+    #         pred = match.group(1).strip()
+    #     else:
+    #         # Fallback to first number pattern 
+    #         pattern = r"-?\d*\.?\d+"
+    #         numbers = re.findall(pattern, parts)
+    #         pred = numbers[0] if numbers else ""
     
-    elif "**Final Answer:**" in pred_str:
-        content = pred_str.split("**Final Answer:**")[-1].strip()
-        pattern = r"-?\d*\.?\d+"
-        numbers = re.findall(pattern, content)
-        pred = numbers[0] if numbers else ""
-        return pred
-    elif "**Final Answer**:" in pred_str:
-        content = pred_str.split("**Final Answer**:")[-1].strip()
-        pattern = r"-?\d*\.?\d+"
-        numbers = re.findall(pattern, content)
-        pred = numbers[0] if numbers else ""
-        return pred
-    elif "Final Answer:" in pred_str:
-        content = pred_str.split("Final Answer:")[-1].strip()
-        pattern = r"-?\d*\.?\d+"
-        numbers = re.findall(pattern, content)
-        pred = numbers[0] if numbers else ""
-        return pred
-    elif "**Final Answer**" in pred_str:
-        content = pred_str.split("**Final Answer**")[-1].strip()
-        pattern = r"-?\d*\.?\d+"
-        numbers = re.findall(pattern, content)
-        if numbers:
-            pred = numbers[0]
-        else:   
-            content2 = pred_str.split("**Final Answer**")[0].strip()
-            pattern2 = r"-?\d*\.?\d+"
-            numbers2 = re.findall(pattern2, content2)
-            pred = numbers2[-1] if numbers2 else ""
-        return pred
-    elif "Final Answer}" in pred_str:
-        content = pred_str.split("Final Answer}")[-1].strip()
-        pattern = r"-?\d*\.?\d+"
-        numbers = re.findall(pattern, content)
-        pred = numbers[0] if numbers else ""
-        return pred
+    # elif "**Final Answer:**" in pred_str:
+    #     content = pred_str.split("**Final Answer:**")[-1].strip()
+    #     pattern = r"-?\d*\.?\d+"
+    #     numbers = re.findall(pattern, content)
+    #     pred = numbers[0] if numbers else ""
+    #     return pred
+    # elif "**Final Answer**:" in pred_str:
+    #     content = pred_str.split("**Final Answer**:")[-1].strip()
+    #     pattern = r"-?\d*\.?\d+"
+    #     numbers = re.findall(pattern, content)
+    #     pred = numbers[0] if numbers else ""
+    #     return pred
+    # elif "Final Answer:" in pred_str:
+    #     content = pred_str.split("Final Answer:")[-1].strip()
+    #     pattern = r"-?\d*\.?\d+"
+    #     numbers = re.findall(pattern, content)
+    #     pred = numbers[0] if numbers else ""
+    #     return pred
+    # elif "**Final Answer**" in pred_str:
+    #     content = pred_str.split("**Final Answer**")[-1].strip()
+    #     pattern = r"-?\d*\.?\d+"
+    #     numbers = re.findall(pattern, content)
+    #     if numbers:
+    #         pred = numbers[0]
+    #     else:   
+    #         content2 = pred_str.split("**Final Answer**")[0].strip()
+    #         pattern2 = r"-?\d*\.?\d+"
+    #         numbers2 = re.findall(pattern2, content2)
+    #         pred = numbers2[-1] if numbers2 else ""
+    #     return pred
+    # elif "Final Answer}" in pred_str:
+    #     content = pred_str.split("Final Answer}")[-1].strip()
+    #     pattern = r"-?\d*\.?\d+"
+    #     numbers = re.findall(pattern, content)
+    #     pred = numbers[0] if numbers else ""
+    #    return pred
     else:  # use the last number
         if use_last_number:
             pattern = "-?\d*\.?\d+"

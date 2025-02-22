@@ -1,7 +1,7 @@
 stdout.txt
 outputs/
-plot/*.png
-plot/old/*.png
+plot/*
+tests/*
 *.pyc
 *.pycache*
 latency/*/

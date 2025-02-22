@@ -106,7 +106,7 @@ def setup(args):
             if budget > 0 and "hard" in args.prompt_type:
                 args.max_tokens_per_call = budget   # hard crop
             elif budget > 0 and "hard" not in args.prompt_type:
-                args.max_tokens_per_call = 4096   # models should summarize the answer with 25 new tokens
+                args.max_tokens_per_call = 25   # models should summarize the answer with 25 new tokens
             result = main(llm, tokenizer, data_name, args)
             print("-" * 50)
             print(f"Data: {data_name}")
@@ -123,7 +123,7 @@ def prepare_data(data_name, args):
         return out_file_prefix, output_dir, out_file
     
     # if original run of soft crop without budget or using hard crop with budget, load samples from original dataset
-    if 1:
+    if args.budget < 0 or "hard" in args.prompt_type:
         examples = load_data(data_name, args.split, args.data_dir)
         # sample `num_test_sample` from dataset， -1 for full data
         if args.num_test_sample > 0:
@@ -180,7 +180,7 @@ def main(llm, tokenizer, data_name, args):
         executor = PythonExecutor(get_answer_from_stdout=True)
     
     # if original run of soft crop without budget or using hard crop with budget, still needs processing
-    if 1:
+    if args.budget < 0 or "hard" in args.prompt_type:
         samples = []
         print("\nProcessing", len(examples), "examples", "=" * 50)
         # process each example
