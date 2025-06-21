@@ -12,19 +12,19 @@ PROMPT_TYPE_LIST=(
     # "direct"
     "sbs"
     "c2f"
-    # "aav"
+    "aav"
     # "kf"
-    "sbs-hard"
+    # "sbs-hard"
     # "direct-hard"
     # "quick-hard"
-    "c2f-hard"
+    # "c2f-hard"
     # "aav-hard"
 )
 
 OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/2_6
 
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="0,1"
+    export CUDA_VISIBLE_DEVICES="2,3"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     

@@ -4,6 +4,7 @@
 models=(
 # Qwen/Qwen2.5-14B-Instruct
 # Qwen/Qwen2.5-32B-Instruct
+# Qwen/Qwen2.5-72B-Instruct
 # internlm/internlm2-math-plus-7b
 # internlm/internlm2-math-plus-20b
 # AI-MO/NuminaMath-7B-CoT
@@ -15,9 +16,9 @@ models=(
 # PowerInfer/SmallThinker-3B-Preview
 # internlm/internlm2-math-plus-1_8b
 # deepseek-ai/DeepSeek-V2-Lite-Chat
-internlm/internlm2_5-20b-chat
-internlm/internlm2_5-7b-chat
-internlm/internlm2_5-1_8b-chat
+# internlm/internlm2_5-20b-chat
+# internlm/internlm2_5-7b-chat
+# internlm/internlm2_5-1_8b-chat
 # internlm/internlm2-chat-7b
 # internlm/internlm2-chat-20b
 # internlm/internlm2-chat-1_8b
@@ -49,5 +50,5 @@ internlm/internlm2_5-1_8b-chat
 # 遍历每个模型并下载
 for model in "${models[@]}"
 do
-   ./hf_guohong.sh $model  --exclude  "*.ckpt" "*.pth" #--token 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 #"consolidated.safetensors" # --token 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 
+   ./hf_guohong.sh $model  --exclude  "*.ckpt" "*.pth" "*.bin" # --token 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 #"consolidated.safetensors"
 done

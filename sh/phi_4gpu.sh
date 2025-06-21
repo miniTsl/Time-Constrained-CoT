@@ -2,29 +2,33 @@
 MODEL_LIST=(
     # "microsoft/phi-4"
     # "microsoft/Phi-3-medium-128k-instruct"
-    "microsoft/Phi-3-small-128k-instruct"
-    "microsoft/Phi-3.5-mini-instruct"
+    # "microsoft/Phi-3-small-128k-instruct"
+    # "microsoft/Phi-3.5-mini-instruct"
     "microsoft/Phi-3-mini-128k-instruct"
 )
 
 PROMPT_TYPE_LIST=(
+    # "c2f-budget"
+    # "aav-budget"
+    # "sbs-budget"
+    # "sbs-budget-hard"
     # "quick"
     # "direct"
     "sbs"
     "c2f"
-    # "aav"
+    "aav"
     # "kf"
-    "sbs-hard"
+    # "sbs-hard"
     # "direct-hard"
     # "quick-hard"
-    "c2f-hard"
+    # "c2f-hard"
     # "aav-hard"
 )
 
 OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/2_6
 
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="2,3,5,6"
+    export CUDA_VISIBLE_DEVICES="4,5,6,7"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     

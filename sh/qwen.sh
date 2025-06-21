@@ -1,9 +1,10 @@
 # 定义模型列表为数组
 MODEL_LIST=(
+    # Qwen/Qwen2.5-72B-Instruct 
     # Qwen/Qwen2.5-32B-Instruct 
     # Qwen/Qwen2.5-14B-Instruct
     # Qwen/Qwen2.5-7B-Instruct 
-    Qwen/Qwen2.5-3B-Instruct 
+    # Qwen/Qwen2.5-3B-Instruct 
     Qwen/Qwen2.5-1.5B-Instruct
     # Qwen/QwQ-32B-Preview 
     # NovaSky-AI/Sky-T1-32B-Preview
@@ -16,13 +17,12 @@ PROMPT_TYPE_LIST=(
     # "direct"
     "sbs"
     "c2f"
-    # "aav"
+    "aav"
     # "kf"
-    # "o1-mimic-hard-user"
-    "sbs-hard"
+    # "sbs-hard"
     # "direct-hard"
     # "quick-hard"
-    "c2f-hard"
+    # "c2f-hard"
     # "aav-hard"
 )
 
@@ -31,7 +31,7 @@ OUTPUT_DIR=/data03/sunyi/time_constrained_cot/outputs/2_6
 
 # 遍历模型列表
 for MODEL_NAME_OR_PATH in "${MODEL_LIST[@]}"; do
-    export CUDA_VISIBLE_DEVICES="2,3,5,6"
+    export CUDA_VISIBLE_DEVICES="0"
     echo "CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}"
     echo "Processing model: ${MODEL_NAME_OR_PATH}"
     if [[ ${MODEL_NAME_OR_PATH} == *"Math"* ]]; then

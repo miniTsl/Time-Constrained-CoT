@@ -1,37 +1,38 @@
 model_list=(
-#     # "mistralai/Mistral-7B-Instruct-v0.3"
-#     # "mistralai/Ministral-8B-Instruct-2410"
-#     "mistralai/Mistral-Nemo-Instruct-2407"
-#     "mistralai/Mistral-Small-Instruct-2409"
-#     # "mistralai/Mathstral-7B-v0.1"
+    # "mistralai/Mistral-7B-Instruct-v0.3"
+    mistralai/Ministral-8B-Instruct-2410
+    # mistralai/Mistral-Nemo-Instruct-2407
+    # mistralai/Mistral-Small-Instruct-2409
+    # mistralai/Mathstral-7B-v0.1
     
 #     # "Qwen/Qwen2.5-32B-Instruct"
-#     # "Qwen/Qwen2.5-14B-Instruct"
-#     # "Qwen/Qwen2.5-7B-Instruct"
-#     # "Qwen/Qwen2.5-3B-Instruct"
-#     # "Qwen/Qwen2.5-1.5B-Instruct"
-#     # "Qwen/Qwen2.5-Math-1.5B-Instruct"
-#     # "Qwen/Qwen2.5-Math-7B-Instruct"
+    # Qwen/Qwen2.5-14B-Instruct
+    # Qwen/Qwen2.5-7B-Instruct
+    # Qwen/Qwen2.5-3B-Instruct
+    # Qwen/Qwen2.5-1.5B-Instruct
+    # Qwen/Qwen2.5-Math-1.5B-Instruct
+    # Qwen/Qwen2.5-Math-7B-Instruct
 #     # "Qwen/QwQ-32B-Preview"
     
-#     # "microsoft/Phi-3-mini-128k-instruct"
-#     # "microsoft/Phi-3-small-128k-instruct"
-#     # "microsoft/Phi-3-medium-128k-instruct"
-#     # "microsoft/Phi-3.5-mini-instruct"
-#     # # "microsoft/phi-4"
+    # microsoft/Phi-3-mini-128k-instruct
+    # microsoft/Phi-3-small-128k-instruct
+    # microsoft/Phi-3-medium-128k-instruct
+    # microsoft/Phi-3.5-mini-instruct
+    # microsoft/phi-4
     
-#     # "meta-llama/Llama-3.2-3B-Instruct"
-#     # "meta-llama/Llama-3.2-1B-Instruct"
-#     # "meta-llama/Llama-3.1-8B-Instruct"
+    # meta-llama/Llama-3.2-3B-Instruct
+    # meta-llama/Llama-3.2-1B-Instruct
+    # meta-llama/Llama-3.1-8B-Instruct
     
-#     # "google/gemma-2-9b-it"
-#     # "google/gemma-2-2b-it"
+    # google/gemma-2-27b-it
+    # google/gemma-2-9b-it
+    # google/gemma-2-2b-it
 
 #     # "AI-MO/NuminaMath-7B-CoT"
 
-#     # "internlm/internlm2_5-1_8b-chat"
-#     # "internlm/internlm2_5-7b-chat"
-#     # "internlm/internlm2_5-20b-chat"
+    # internlm/internlm2_5-1_8b-chat
+    # internlm/internlm2_5-7b-chat
+    # internlm/internlm2_5-20b-chat
 #     # "internlm/internlm2-math-plus-1_8b"
 #     # "internlm/internlm2-math-plus-20b"
 #     # "internlm/internlm2-math-plus-7b"
@@ -42,20 +43,20 @@ model_list=(
 #     # "PowerInfer/SmallThinker-3B-Preview"
 
 #     # "Skywork/Skywork-o1-Open-Llama-3.1-8B"
-    deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
-    deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
-    deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
-    deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
-    deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+    # deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+    # deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+    # deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+    # deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+    # deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 )
 
 for model in "${model_list[@]}"; do
     model_name=$(echo "$model" | sed 's/\//--/g')  # Replace slashes with double dashes
     local_path="/data03/sunyi/hf_cache/hub/models--${model_name}"
-    remote_path="sunyi@10.0.0.10:/data/sunyi/hf_cache/hub/"
+    remote_path="sunyi@166.111.249.127:/mnt/sda/.cache/huggingface/hub/"
     echo "local_path: $local_path"
     echo "remote_path: $remote_path"
-    rsync -avz --info=progress2 -e "ssh -p 2233" "$local_path" "$remote_path"
+    rsync -avz --info=progress2 -e "ssh -p 2222" "$local_path" "$remote_path"
 done
 
 # rsync -avz --info=progress2 -e "ssh -p 2233" /data03/sunyi/time_constrained_cot/outputs/1_10/Qwen sunyi@10.0.0.10:/home/sunyi/Time-Constrained-CoT/outputs/1_10/
