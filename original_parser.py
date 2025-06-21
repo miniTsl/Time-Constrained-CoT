@@ -370,13 +370,13 @@ direct_answer_trigger_for_fewshot = ("choice is", "answer is")
 def choice_answer_clean(pred: str):
     pred = pred.strip("\n")
 
-    # Determine if this is ICL, if so, use \n\n to split the first chunk.
-    ICL = False
-    for trigger in direct_answer_trigger_for_fewshot:
-        if pred.count(trigger) > 1:
-            ICL = True
-    if ICL:
-        pred = pred.split("\n\n")[0]
+    # # Determine if this is ICL, if so, use \n\n to split the first chunk.
+    # ICL = False
+    # for trigger in direct_answer_trigger_for_fewshot:
+    #     if pred.count(trigger) > 1:
+    #         ICL = True
+    # if ICL:
+    #     pred = pred.split("\n\n")[0]
 
     # Split the trigger to find the answer.
     preds = re.split("|".join(direct_answer_trigger_for_fewshot), pred)
@@ -501,7 +501,7 @@ def extract_theoremqa_answer(pred: str, answer_flag: bool = True):
 
 def extract_answer(pred_str, data_name, use_last_number=True):
     pred_str = pred_str.replace("\u043a\u0438", "")
-    if data_name in ["mmlu_stem", "sat_math", "aqua", "gaokao2023"]:
+    if data_name in ["mmlu_stem", "acpbench", "sat_math", "aqua", "gaokao2023"]:
         # TODO check multiple choice
         return choice_answer_clean(pred_str)
 
@@ -620,6 +620,8 @@ def parse_ground_truth(example: Dict[str, Any], data_name):
     elif data_name == "mmlu_stem":
         abcd = "ABCD"
         gt_cot, gt_ans = None, abcd[example["answer"]]
+    elif data_name == "acpbench":
+        gt_cot, gt_ans = None, example["answer"]
     elif data_name == "sat_math":
         gt_cot, gt_ans = None, example["Answer"]
     elif data_name == "aqua":
@@ -680,7 +682,7 @@ def parse_question(example, data_name):
             )
     elif data_name == "carp_en":
         question = example["content"]
-    elif data_name == "mmlu_stem":
+    elif data_name in ["mmlu_stem", "acpbench"]:
         options = example["choices"]
         assert len(options) == 4
         for i, (label, option) in enumerate(zip("ABCD", options)):

@@ -2,14 +2,29 @@
 # # Quick hard
 # quick_hard = """Give an answer based on intuition or quick calculation. Put your answer within \\boxed{{}}."""
 
+
+
+
 # # Direct hard
 # direct_hard = """Solve the problem and put your final answer within \\boxed{{}}."""
 
-# Step-by-step hard
+
+
+
+# # Step-by-step hard
+# sbs_hard = """Please reason step by step. 
+# Conclude with: 
+# Therefore, the final answer is: \\boxed{{[answer]}}.
+# Where [answer] is just the final number or expression that solves the problem."""
+
+# Step-by-step hard for mmlu_stem
 sbs_hard = """Please reason step by step. 
 Conclude with: 
-Therefore, the final answer is: \\boxed{{[answer]}}.
-Where [answer] is just the final number or expression that solves the problem."""
+Therefore, the final choice is: [answer].
+Where [answer] is just the choice of the multiple choices that solves the problem."""
+
+
+
 
 # # Coarse-to-fine hard (original)
 # c2f_hard = """Use the following pattern to solve the problem:
@@ -23,7 +38,19 @@ Where [answer] is just the final number or expression that solves the problem.""
 # Therefore, the final answer is: \\boxed{{[answer]}}.
 # Where [answer] is just the final number or expression that solves the problem."""
 
-# Coarse-to-fine hard (modified)
+# # Coarse-to-fine hard (modified)
+# c2f_hard = """Use the following pattern to solve the problem:
+# **Coarse-Grained Reasoning**
+# Provide a brief analysis of the problem, focusing on efficiency and conciseness.
+
+# **Fine-Grained Reasoning**
+# Provide detailed reasoning step by step of the problem, focusing on correctness and rigor.
+
+# Conclude with: 
+# Therefore, the final answer is: \\boxed{{[answer]}}.
+# Where [answer] is just the final number or expression that solves the problem."""
+
+# Coarse-to-fine hard for mmlu_stem
 c2f_hard = """Use the following pattern to solve the problem:
 **Coarse-Grained Reasoning**
 Provide a brief analysis of the problem, focusing on efficiency and conciseness.
@@ -32,10 +59,25 @@ Provide a brief analysis of the problem, focusing on efficiency and conciseness.
 Provide detailed reasoning step by step of the problem, focusing on correctness and rigor.
 
 Conclude with: 
-Therefore, the final answer is: \\boxed{{[answer]}}.
-Where [answer] is just the final number or expression that solves the problem."""
+Therefore, the final choice is: [answer].
+Where [answer] is just the choice of the multiple choices that solves the problem."""
 
-# Answer and Verify hard
+
+
+
+# # Answer and Verify hard
+# aav_hard = """Use the following pattern to solve the problem:
+# **Quick Answer**
+# Provide an initial answer based on intuition or quick calculation.
+
+# **Verification**
+# Provide a revised answer through reasoning step by step. Correct previous mistakes, if any.
+
+# Conclude with: 
+# Therefore, the final answer is: \\boxed{{[answer]}}.
+# Where [answer] is just the final number or expression that solves the problem."""
+
+# Answer and Verify hard for mmlu_stem
 aav_hard = """Use the following pattern to solve the problem:
 **Quick Answer**
 Provide an initial answer based on intuition or quick calculation.
@@ -44,8 +86,11 @@ Provide an initial answer based on intuition or quick calculation.
 Provide a revised answer through reasoning step by step. Correct previous mistakes, if any.
 
 Conclude with: 
-Therefore, the final answer is: \\boxed{{[answer]}}.
-Where [answer] is just the final number or expression that solves the problem."""
+Therefore, the final choice is: [answer].
+Where [answer] is just the choice of the multiple choices that solves the problem."""
+
+
+
 
 # # Knowledge First hard
 # kf_hard = """Solve the task by following format:
@@ -58,11 +103,23 @@ Where [answer] is just the final number or expression that solves the problem.""
 # **Final Answer**
 # Your final answer within \\boxed{{}}."""
 
-## early stop and conclude before budget
+
+
+
+# # early stop and conclude before budget
+# early_stop = """\n\nNotice: When you are interrupted by the keyword **Time’s Up!**, stop reasoning immediately.
+# Based on your reasoning so far, conclude with: 
+# Therefore, the final answer is: \\boxed{{[answer]}}.
+# Where [answer] is just the final number or expression that solves the problem."""
+
+# early stop and conclude before budget for mmlu_stem
 early_stop = """\n\nNotice: When you are interrupted by the keyword **Time’s Up!**, stop reasoning immediately.
 Based on your reasoning so far, conclude with: 
-Therefore, the final answer is: \\boxed{{[answer]}}.
-Where [answer] is just the final number or expression that solves the problem."""
+Therefore, the final choice is: [answer].
+Where [answer] is just the choice of the multiple choices that solves the problem."""
+
+
+
 
 # # quick
 # quick = quick_hard + early_stop
@@ -82,6 +139,9 @@ aav = aav_hard + early_stop
 # # Knowledge First
 # kf = kf_hard + early_stop
 
+
+
+
 ## append output token limit onto prompts
 # budget_limit = "\n\nMake sure your response uses less than {token_budget} tokens."
 # # sbs-budget-hard
@@ -96,6 +156,8 @@ aav = aav_hard + early_stop
 
 # # aav-budget
 # aav_budget = aav_hard + early_stop + budget_limit
+
+
 
 
 # First define all unique chat templates

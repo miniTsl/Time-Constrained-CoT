@@ -28,7 +28,7 @@ def gen_budget_list(budget, data_name, model, prompt_type):
             "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
         ]
         if model in o1_like_models: # maybe should extend to longer sequence
-            if data_name == "gsm8k":
+            if data_name in ["gsm8k"]:
                 budget_list = []
                 for i in range(25, 300, 25):
                     budget_list.append(i)
@@ -36,20 +36,20 @@ def gen_budget_list(budget, data_name, model, prompt_type):
                     budget_list.append(i)
                 for i in range(600, 1501, 100):
                     budget_list.append(i)
-            elif data_name in ["math", "math500"]:
+            elif data_name in ["math", "math500", "mmlu_stem", "acpbench"]:
                 budget_list = []
                 for i in range(25, 600, 25):
                     budget_list.append(i)
                 for i in range(600, 3601, 100):
                     budget_list.append(i)
         else:    
-            if data_name == "gsm8k":
+            if data_name in ["gsm8k"]:
                 budget_list = []
                 for i in range(25, 300, 25):
                     budget_list.append(i)
                 for i in range(300, 601, 50):
                     budget_list.append(i)
-            elif data_name in ["math", "math500"]:
+            elif data_name in ["math", "math500", "mmlu_stem", "acpbench"]:
                 budget_list = []
                 for i in range(25, 300, 25):
                     budget_list.append(i)

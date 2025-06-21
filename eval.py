@@ -67,7 +67,7 @@ def setup(args):
                 tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
                 pipeline_parallel_size=args.pipeline_parallel_size,
                 trust_remote_code=True,
-                gpu_memory_utilization=0.85,
+                gpu_memory_utilization=0.9,
                 enable_chunked_prefill=False,
                 max_model_len = 10240 if "gemma" not in args.model_name_or_path and "Qwen2.5-Math" not in args.model_name_or_path else None,
                 max_num_seqs = 512
@@ -78,7 +78,7 @@ def setup(args):
                 tensor_parallel_size=len(available_gpus) // args.pipeline_parallel_size,
                 pipeline_parallel_size=args.pipeline_parallel_size,
                 trust_remote_code=True,
-                gpu_memory_utilization=0.85,
+                gpu_memory_utilization=0.9,
                 max_model_len = 10240 if "gemma" not in args.model_name_or_path and "Qwen2.5-Math" not in args.model_name_or_path else None,
                 max_num_seqs = 512
             )
@@ -279,7 +279,7 @@ def main(llm, tokenizer, data_name, args):
         prompts = [item[1] for item in current_prompts]
         # spilt prompts into chunks to avoid OOM
         num_prompts = len(prompts)
-        chunk_size = min(num_prompts, 750)
+        chunk_size = min(num_prompts, 1000)
         outputs = []
 
         for i in range(0, num_prompts, chunk_size):
