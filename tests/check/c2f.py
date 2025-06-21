@@ -46,11 +46,15 @@ model_list = [
     # "PowerInfer/SmallThinker-3B-Preview",
     # "Skywork/Skywork-o1-Open-Llama-3.1-8B",
     # "NovaSky-AI/Sky-T1-32B-Preview", # the same as qwen series
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    # "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
     # "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
+    # "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+    # "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+    # "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+    
+    # "01-ai/Yi-1.5-34B-Chat-16K",
+    "01-ai/Yi-1.5-9B-Chat-16K",
+    # "01-ai/Yi-1.5-6B-Chat"
 ]
 print(len(model_list))
 
@@ -79,7 +83,9 @@ CHAT_TEMPLATE_FORMATS = {
     
     "deepseek_format": "<｜begin▁of▁sentence｜>{system_message}\n\nUser: {user_message}\n\nAssistant:",
     
-    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{user_message}<｜Assistant｜>"
+    "deepseek-r1-distill_format" : "<｜begin▁of▁sentence｜><｜User｜>{user_message}<｜Assistant｜>",
+    
+    "01-ai_format": "{system_message}<|im_start|>user\n{user_message}<|im_end|>\n<|im_start|>assistant\n",
 }
 
 # Then map each model to its template format
@@ -147,7 +153,12 @@ MODEL_TO_TEMPLATE = {
     "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
     "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
     "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"]
+    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": CHAT_TEMPLATE_FORMATS["deepseek-r1-distill_format"],
+    
+    # 01-ai
+    "01-ai/Yi-1.5-34B-Chat-16K": CHAT_TEMPLATE_FORMATS["01-ai_format"],
+    "01-ai/Yi-1.5-9B-Chat-16K": CHAT_TEMPLATE_FORMATS["01-ai_format"],
+    "01-ai/Yi-1.5-6B-Chat": CHAT_TEMPLATE_FORMATS["01-ai_format"]
 }
 
 c2f_prompt = """Solve the task by following format:
@@ -225,8 +236,8 @@ Your final answer within \\boxed{{}} when done reasoning or early-stop keyword *
 
 
 # question 3
-os.environ["CUDA_VISIBLE_DEVICES"] = "5"
-with open("c2f_q3.txt", "w") as f:
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+with open("c2f_q3.txt", "a") as f:
     for checkpoint in model_list:
         print("<<< checkpoint: ", checkpoint)
         f.write("<<< checkpoint: " + checkpoint + "\n")
@@ -237,17 +248,30 @@ with open("c2f_q3.txt", "w") as f:
             device_map="cuda",
             torch_dtype="auto"
         )
-        question = "How many prime numbers less than 100 have a units digit of 3?"
+        # question = "How many prime numbers less than 100 have a units digit of 3?"
+        question = "Tell me something about AI"
         if "gemma" in checkpoint or "DeepSeek-R1-Distill" in checkpoint:
             prompt = MODEL_TO_TEMPLATE[checkpoint].format(user_message=c2f_prompt + "\n\n" + question)
         else:
-            prompt = MODEL_TO_TEMPLATE[checkpoint].format(system_message=c2f_prompt, user_message=question)
-#         part = """<think>
-# To determine how many prime numbers less than 100 have a units digit of 3, I'll start by listing all numbers less than 100 that end with 3. These numbers are 3, 13, 23, 33, 43, 53, 63, 73, 83, and 93.
+            prompt = MODEL_TO_TEMPLATE[checkpoint].format(system_message="You are a helpful assistant.", user_message=question)
+#         prompt = MODEL_TO_TEMPLATE[checkpoint].format(system_message="You are a math expert.", user_message=c2f_prompt + "\n\nQuestion: " + question)
+#         # print("<<< prompt:", prompt)
+#         part = """To determine how many prime numbers less than 100 have a units digit of 3, we will follow a systematic approach by checking each number that ends in 3 and verifying its primality.
 
-# Next, I'll """
-#         prompt = prompt.replace("<｜Assistant｜>", "<｜Assistant｜>" + part + "\n\n**Final Answer**\n")
-#         print(prompt)
+# First, list all numbers less than 100 that end in 3:
+# \[ 3, 13, 23, 33, 43, 53, 63, 73, 83, 93 \]
+
+# Next, we will check each of these numbers to see if they are prime.
+
+# 1. **3**:
+#    - Divisors: 1, 3
+#    - Prime: Yes
+
+# 2. **13**:
+#    - Divisors:"""
+#         prompt = prompt.replace("<|im_start|>assistant\n", "<|im_start|>assistant\n" + part + "\n\n**Final Answer**\n")
+        # prompt = """"<s>[INST] Solve the task by following format:\n**Coarse Reasoning**\nShort analysis and an answer. Focus on efficiency and simplicity.\n\n**Fine Reasoning**\nDetailed analysis step by step and a refined answer. Focus on accuracy and correctness.\n\n**Final Answer** \nYour final answer within \\boxed{} when done reasoning or early-stop keyword **Final Answer** appears.\n\nConvert the point $(0,3)$ in rectangular coordinates to polar coordinates.  Enter your answer in the form $(r,\\theta),$ where $r > 0$ and $0 \\le \\theta < 2 \\pi.$[/INST] **Coarse Reasoning**\nTo convert the point $(0,3)$ from rectangular coordinates to polar coordinates, we need to find the radius $r$ and the angle $\\theta$. The radius $r$ is the distance from the origin to the point, and the angle $\\theta$ is the angle formed by the positive x-axis and the line connecting the origin to the point.\n\n**Fine Reasoning**\n1. Calculate the radius $r$:\n\n**Final Answer**\n"""
+        print("<<< prompt:", prompt)
         inputs = tokenizer([prompt], return_tensors="pt").to(model.device)
         out = model.generate(**inputs, max_new_tokens=4096, do_sample=False)
         generated_ids = out[0][len(inputs.input_ids[0]):]
