@@ -45,6 +45,8 @@ models=(
 # deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
 # deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
 # deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+# Shakker-Labs/FLUX.1-dev-LoRA-AntiBlur
+black-forest-labs/FLUX.1-Kontext-dev
 )
 
 # 遍历每个模型并下载
